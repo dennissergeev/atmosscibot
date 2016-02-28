@@ -3,14 +3,22 @@ import bs4
 import matplotlib.pyplot as plt
 import feedparser as fp
 import urllib
+import bitly_api
 from wordcloud import WordCloud, STOPWORDS
+from tweet_text import assemble_tweet_text
 
 rss_feed_url = 'http://www.atmos-chem-phys.net/xml/rss2_0.xml'
 
 f = fp.parse(rss_feed_url)
 
+bicon = bitly_api.Connection(login=API_LOGIN, api_key=API_KEY)
+
+tweets = []
+
 for i, entry in enumerate(f.entries):
     url = entry.link
+    short_url = bicon.shorten(url)['url']
+    tweets.append(assemble_tweet_text(entry.title, short_url))
     url_split = [s for s in url.split('/') if s]
     if 'discuss' in url:
         # links look like http://www.atmos-chem-phys-discuss.net/acp-2016-95/acp-2016-95.xml
