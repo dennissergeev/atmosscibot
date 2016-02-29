@@ -15,12 +15,15 @@ f = fp.parse(rss_feed_url)
 
 for i, entry in enumerate(f.entries):
     url = entry.link
-    with open(links.log) as log:
-        if not url in log.read():
-            # Continue
-            new_entry = True
-        else:
-            new_entry = False
+    try:
+        with open('links.log', 'r') as log:
+            if not url in log.read():
+                # Continue
+                new_entry = True
+            else:
+                new_entry = False
+    except FileNotFoundError:
+        new_entry = True 
 
     if new_entry:
         text = get_text(url)
@@ -28,5 +31,5 @@ for i, entry in enumerate(f.entries):
         imgname = basic(text)
         
         post_tweet(url, entry.title, imgname) 
-        with open(links.log, 'a') as log:
+        with open('links.log', 'a') as log:
             log.write(url + '\n')

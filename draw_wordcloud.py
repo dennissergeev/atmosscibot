@@ -6,14 +6,14 @@ import matplotlib.pyplot as plt
 import os
 from wordcloud import WordCloud, STOPWORDS
 
-_omit_words = ['et', 'al', 'br', 'sup', 'sub', 'minus', 'plus']
-_dpi = 100
+_omit_words = ['et', 'al', 'br', 'sup', 'sub', 'minus', 'plus', 'also', 'will', 'km', 'cm', 'therefore', 'may', 'fig']
+dpi = 300
 _fig_kw = dict(figsize=(440/dpi, 220/dpi), dpi=dpi)
 _output_dir = 'wordcloud_img'
 
 def basic(text):
-    wc = WordCloud(stopwords=list(STOPWORDS)+_omit_words)
-    arr = wc.generate(text_body)
+    wc = WordCloud(margin=10, stopwords=list(STOPWORDS)+_omit_words)
+    arr = wc.generate(text)
 
     fig = plt.figure(**_fig_kw)
     ax = fig.add_subplot(111)
@@ -22,7 +22,7 @@ def basic(text):
     
     extent = ax.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
     
-    if not os.isdir(_output_dir):
+    if not os.path.isdir(_output_dir):
         os.mkdir(_output_dir)
 
     imgname = os.path.join(_output_dir,
