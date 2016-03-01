@@ -8,12 +8,14 @@ from wordcloud import WordCloud, STOPWORDS
 
 _omit_words = ['et', 'al', 'br', 'sup', 'sub', 'minus', 'plus', 'also', 'will', 'km', 'cm', 'therefore', 'may', 'fig']
 dpi = 100
-_fig_kw = dict(figsize=(440/dpi, 220/dpi), dpi=dpi)
+_fig_kw = dict(figsize=(440/dpi, 220/dpi), dpi=3*dpi)
 _output_dir = 'wordcloud_img'
+arr = np.array(Image.open('mask_ellipse.png'))
 
 def basic(text):
-    wc = WordCloud(stopwords=list(STOPWORDS)+_omit_words)
-    arr = wc.generate(text)
+
+    wc = WordCloud(stopwords=list(STOPWORDS)+_omit_words, background_color='black', mask=arr)
+    wc.generate(text)
 
     fig = plt.figure(**_fig_kw)
     ax = fig.add_subplot(111)
@@ -28,7 +30,10 @@ def basic(text):
     imgname = os.path.join(_output_dir,
                            'fig2tweet.png')
     
-    fig.savefig(imgname, bbox_inches=extent)
+    try:
+        fig.savefig(imgname, bbox_inches=extent)
+    except:
+        fig.savefig(imgname)
     plt.close(fig)
 
     return imgname
