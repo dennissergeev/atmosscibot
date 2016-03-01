@@ -26,7 +26,7 @@ def assemble_tweet_text(ttl, short_url):
     tweet_text = ttl[0:80]+'... '+short_url # title: 115 characters, bitly: 21, punctuation: 4
     return tweet_text
 
-def post_tweet(url, title, imgname):
+def post_tweet(url, title, imgname=None):
     tw_api, bicon = init_api()
     short_url = bicon.shorten(url)['url']
     
@@ -35,5 +35,8 @@ def post_tweet(url, title, imgname):
     #print(tweet_text)
     #print(len(tweet_text))
 
-    # Tweet text and image
-    tw_api.update_with_media(imgname, status=tweet_text)
+    if imgname is not None:
+        # Tweet text and image
+        tw_api.update_with_media(imgname, status=tweet_text)
+    else:
+        tw_api.update_status(tweet_text)

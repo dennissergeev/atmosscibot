@@ -3,20 +3,23 @@
 Bot that creates word clouds from scientific articles and posts them to Twitter
 """
 import feedparser as fp
+import os
 import urllib
 
 from parse_article import get_text
-from draw_wordcloud import basic
+from draw_wordcloud import plot_wc
 from twiply import post_tweet
 
 rss_feed_url = 'http://www.atmos-chem-phys.net/xml/rss2_0.xml'
 
 f = fp.parse(rss_feed_url)
 
+curdir = os.path.dirname(os.path.realpath(__file__))
+logfile = os.path.join(curdir, 'processed_entries_urls.log')
 for i, entry in enumerate(f.entries):
     url = entry.link
     try:
-        with open('links.log', 'r') as log:
+        with open(logfile, 'r') as log:
             if not url in log.read():
                 # Continue
                 new_entry = True
@@ -28,8 +31,8 @@ for i, entry in enumerate(f.entries):
     if new_entry:
         text = get_text(url)
         
-        imgname = basic(text)
+        imgname = plot_wc(text)
         
         post_tweet(url, entry.title, imgname) 
-        with open('links.log', 'a') as log:
+        with open(logfile, 'a') as log:
             log.write(url + '\n')

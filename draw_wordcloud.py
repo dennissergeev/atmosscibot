@@ -2,38 +2,50 @@
 """
 Create a word cloud from text
 """
+import logging
 import matplotlib.pyplot as plt
+import numpy as np
 import os
+from PIL import Image
 from wordcloud import WordCloud, STOPWORDS
 
-_omit_words = ['et', 'al', 'br', 'sup', 'sub', 'minus', 'plus', 'also', 'will', 'km', 'cm', 'therefore', 'may', 'fig']
 dpi = 100
-_fig_kw = dict(figsize=(440/dpi, 220/dpi), dpi=3*dpi)
-_output_dir = 'wordcloud_img'
-arr = np.array(Image.open('mask_ellipse.png'))
+fig_kw = dict(figsize=(1024/dpi, 512/dpi), dpi=dpi)
+curdir = os.path.dirname(os.path.realpath(__file__))
+output_dir = os.path.join(curdir,'wordcloud_img')
+if not os.path.isdir(output_dir):
+    os.mkdir(output_dir)
+imgname = os.path.join(output_dir,
+                       'fig2tweet.png')
+logging.basicConfig(filename=os.path.join(curdir,'draw_wordcloud.log'),
+                    level=logging.DEBUG, format='%(asctime)s %(message)s')
 
-def basic(text):
+# words to exclude
+exclude_words = list(STOPWORDS)
+for fname in ['ten_hundred_most_used_words',
+              'technical_words',
+              'academ_words',
+              'unit_words']:
+    with open(os.path.join(curdir,'exclude_words',fname), 'r') as f:
+        exclude_words += f.read().split('\n')
+exclude_words = set(exclude_words)
 
-    wc = WordCloud(stopwords=list(STOPWORDS)+_omit_words, background_color='black', mask=arr)
-    wc.generate(text)
-
-    fig = plt.figure(**_fig_kw)
-    ax = fig.add_subplot(111)
-    ax.imshow(wc)
-    ax.axis('off')
-    
-    extent = ax.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
-    
-    if not os.path.isdir(_output_dir):
-        os.mkdir(_output_dir)
-
-    imgname = os.path.join(_output_dir,
-                           'fig2tweet.png')
-    
+def plot_wc(text):
     try:
-        fig.savefig(imgname, bbox_inches=extent)
-    except:
-        fig.savefig(imgname)
-    plt.close(fig)
+        arr = np.array(Image.open(os.path.join(curdir, 'mask_ellipse.png')))
 
-    return imgname
+        wc = WordCloud(stopwords=exclude_words, background_color=None, mode='RGBA', mask=arr)
+        wc.generate(text)
+
+        fig = plt.figure(**fig_kw)
+        ax = fig.add_axes([0., 0., 1., 1.])
+        ax.imshow(wc)
+        ax.axis('off')
+
+        #extent = ax.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
+        fig.savefig(imgname)
+        plt.close(fig)
+        return imgname
+
+    except Exception as e:
+        logging.error(e)
