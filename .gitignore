@@ -2,3 +2,4 @@ tokens
 *.pyc
 .ipynb_checkpoints
 wordcloud_img
+*.log

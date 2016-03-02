@@ -2,7 +2,7 @@
 """
 Create a word cloud from text
 """
-import logging
+#import logging
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -17,8 +17,8 @@ if not os.path.isdir(output_dir):
     os.mkdir(output_dir)
 imgname = os.path.join(output_dir,
                        'fig2tweet.png')
-logging.basicConfig(filename=os.path.join(curdir,'draw_wordcloud.log'),
-                    level=logging.DEBUG, format='%(asctime)s %(message)s')
+#logging.basicConfig(filename=os.path.join(curdir,'draw_wordcloud.log'),
+#                    level=logging.DEBUG, format='%(asctime)s %(message)s')
 
 # words to exclude
 exclude_words = list(STOPWORDS)
@@ -47,5 +47,6 @@ def plot_wc(text):
         plt.close(fig)
         return imgname
 
-    except Exception as e:
-        logging.error(e)
+    except Exception:
+        pass
+        #logging.exception("message")
