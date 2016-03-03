@@ -10,29 +10,32 @@ from parse_article import get_text
 from draw_wordcloud import plot_wc
 from twiply import post_tweet
 
-rss_feed_url = 'http://www.atmos-chem-phys.net/xml/rss2_0.xml'
+rss_feed_urls = dict(ACP='http://www.atmos-chem-phys.net/xml/rss2_0.xml')
 
-f = fp.parse(rss_feed_url)
-
-curdir = os.path.dirname(os.path.realpath(__file__))
-logfile = os.path.join(curdir, 'processed_entries_urls.log')
-for i, entry in enumerate(f.entries):
-    url = entry.link
-    try:
-        with open(logfile, 'r') as log:
-            if not url in log.read():
-                # Continue
-                new_entry = True
-            else:
-                new_entry = False
-    except FileNotFoundError:
-        new_entry = True 
-
-    if new_entry:
-        text = get_text(url)
-        
-        imgname = plot_wc(text)
-        
-        post_tweet(url, entry.title, imgname) 
-        with open(logfile, 'a') as log:
-            log.write(url + '\n')
+for journ in rss_feed_urls:
+    rss = rss_feed_urls[journ]
+    f = fp.parse(rss)
+    
+    curdir = os.path.dirname(os.path.realpath(__file__))
+    logfile = os.path.join(curdir, 'processed_entries_urls_'+journ+'.log')
+    for i, entry in enumerate(f.entries):
+        url = entry.link
+        try:
+            with open(logfile, 'r') as log:
+                if not url in log.read():
+                    # Continue
+                    new_entry = True
+                else:
+                    new_entry = False
+        except FileNotFoundError:
+            #print('file not found')
+            new_entry = True 
+    
+        if new_entry:
+            text = get_text(url)
+            
+            imgname = plot_wc(text)
+            
+            post_tweet(url, journ, entry.title, imgname) 
+            with open(logfile, 'a') as log:
+                log.write(url + '\n')
