@@ -1,0 +1,34 @@
+[
+    {
+        "name": "Atmospheric Chemistry and Physics Discussions",
+        "rss": "http://www.atmos-chem-phys-discuss.net/xml/rss2_0.xml"
+    },
+    {
+        "name": "Atmospheric Chemistry and Physics",
+        "rss": "http://www.atmos-chem-phys.net/xml/rss2_0.xml"
+    },
+    {
+        "name": "Earth and Planetary Science Letters",
+        "rss": "http://rss.sciencedirect.com/publication/science/0012821X_OA/open-access"
+    },
+    {
+        "name": "Boundary-Layer Meteorology",
+        "rss": "http://link.springer.com/search.rss?facet-journal-id=10546&package=openaccessarticles&search-within=Journal&query="
+    },
+    {
+        "name": "Advances in Atmospheric Sciences",
+        "rss": "http://link.springer.com/search.rss?facet-journal-id=376&package=openaccessarticles&search-within=Journal&query="
+    },
+    {
+        "name": "Meteorology and Atmospheric Physics",
+        "rss": "http://link.springer.com/search.rss?facet-journal-id=703&package=openaccessarticles&search-within=Journal&query="
+    },
+    {
+        "name": "Journal of Atmospheric Chemistry",
+        "rss": "http://link.springer.com/search.rss?facet-journal-id=10874&package=openaccessarticles&search-within=Journal&query="
+    },
+    {
+        "name": "Theoretical and Applied Climatology",
+        "rss": "http://link.springer.com/search.rss?facet-journal-id=704&package=openaccessarticles&search-within=Journal&query="
+    }
+]
