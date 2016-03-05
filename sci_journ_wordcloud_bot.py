@@ -22,11 +22,12 @@ for journ in rss_feed_urls:
         url = entry.link
         try:
             with open(logfile, 'r') as log:
-                if not url in log.read():
-                    # Continue
-                    new_entry = True
-                else:
+                logged = log.read().split('\n')
+            new_entry = True
+            for l in logged:
+                if url == l:
                     new_entry = False
+                    break
         except FileNotFoundError:
             #print('file not found')
             new_entry = True 

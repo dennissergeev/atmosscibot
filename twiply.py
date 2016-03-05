@@ -26,7 +26,7 @@ def assemble_tweet_text(ttl, short_url):
     if len(ttl) > 80:
          ellipsis = '... '
     else:
-         ellipsis = ''
+         ellipsis = ' '
     # title: 80 characters, bitly: 21, punctuation: 4 + image
     tweet_text = ttl[0:80] + ellipsis + short_url
     return tweet_text
