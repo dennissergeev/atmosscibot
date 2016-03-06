@@ -19,7 +19,12 @@ with open(os.path.join(curdir,'journal_list.json')) as json_file:
 for journ in j_list:
     f = fp.parse(journ['rss'])
     
-    logfile = os.path.join(curdir, 'processed_entries_urls_'+journ['short_name']+'.log')
+    if journ['short_name'] in ['ACP', 'ACPD']:
+        # write ACP and ACPD in the same log file
+        logfile = os.path.join(curdir, 'processed_entries_urls_ACP.log')
+    else:
+        logfile = os.path.join(curdir, 'processed_entries_urls_'+journ['short_name']+'.log')
+
     for i, entry in enumerate(f.entries):
         if journ['short_name'] == 'ASL' and 'author' in entry:
             # Skip "Issue information"

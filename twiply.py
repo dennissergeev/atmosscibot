@@ -3,6 +3,7 @@
 Initialise Twitter and Bitly API, update status
 """
 import bitly_api
+import time
 import tweepy
 
 def init_api():
