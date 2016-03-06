@@ -16,7 +16,7 @@ def init_api():
     bicon = bitly_api.Connection(login=tokens['bitly_api_login'], api_key=tokens['bitly_api_key'])
     return api, bicon
 
-def assemble_tweet_text(ttl, short_url):
+def assemble_tweet_text(journal, ttl, short_url):
     """Assemble tweet status"""
     c2del = [('\n', ' '),
              ('\u2013', '-'),

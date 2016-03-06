@@ -11,13 +11,14 @@ from parse_article import get_text
 from draw_wordcloud import plot_wc
 from twiply import post_tweet
 
-with open('journal_list.json') as json_file:
+curdir = os.path.dirname(os.path.realpath(__file__))
+
+with open(os.path.join(curdir,'journal_list.json')) as json_file:
     j_list = json.load(json_file)
 
 for journ in j_list:
     f = fp.parse(journ['rss'])
     
-    curdir = os.path.dirname(os.path.realpath(__file__))
     logfile = os.path.join(curdir, 'processed_entries_urls_'+journ['short_name']+'.log')
     for i, entry in enumerate(f.entries):
         url = entry.link
