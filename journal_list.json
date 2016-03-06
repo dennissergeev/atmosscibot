@@ -10,6 +10,11 @@
         "rss": "http://www.atmos-chem-phys.net/xml/rss2_0.xml"
     },
     {
+        "name": "Atmospheric Science Letters",
+        "short_name": "ASL",
+        "rss": "http://onlinelibrary.wiley.com/rss/journal/10.1002/(ISSN)1530-261X"
+    },
+    {
         "name": "Boundary-Layer Meteorology",
         "short_name": "BML",
         "rss": "http://link.springer.com/search.rss?facet-journal-id=10546&package=openaccessarticles&search-within=Journal&query="
@@ -35,8 +40,13 @@
         "rss": "http://link.springer.com/search.rss?facet-journal-id=704&package=openaccessarticles&search-within=Journal&query="
     },
     {
-        "name": "Atmospheric Science Letters",
-        "short_name": "ASL",
-        "rss": "http://onlinelibrary.wiley.com/rss/journal/10.1002/(ISSN)1530-261X"
+        "name": "Asia-Pacific Journal of Atmospheric Sciences",
+        "short_name": "APJAS",
+        "rss": "http://link.springer.com/search.rss?facet-journal-id=13143&package=openaccessarticles&search-within=Journal&query="
+    },
+    {
+        "name": "Climatic Change",
+        "short_name": "CC",
+        "rss": "http://link.springer.com/search.rss?facet-journal-id=10584&package=openaccessarticles&search-within=Journal&query="
     }
 ]

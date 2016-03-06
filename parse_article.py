@@ -6,19 +6,21 @@ import bs4
 import urllib
 import warnings
 
-def prepare_soup(url, parser):
+def text_from_soup(url, parser, find_args):
     try:
         with urllib.request.urlopen(url) as req:
             doc = req.read()
-        return bs4.BeautifulSoup(doc, parser)
+        soup = bs4.BeautifulSoup(doc, parser)
+        result = soup.find_all(**find_args)
+        return ''.join([i.text for i in result])
     except urllib.request.HTTPError as e:
-        pass
+        # return empty text if url is wrong
+        return ''
 
 
 def get_text(url, journal):
     """Download XML/HTML doc and parse it"""
     parsed_link = urllib.parse.urlparse(url)
-    text = ''
     
     if journal.upper() in ['ACP', 'ACPD']:
         # EGU journals
@@ -27,24 +29,21 @@ def get_text(url, journal):
         if 'discuss' in url:
             # links like http://www.atmos-chem-phys-discuss.net/acp-2016-95/acp-2016-95.xml
             new_path = link_path + '/' + link_path + '.xml'
-            find_by = 'abstract'
+            find_args = dict(name='abstract')
         else:
             # links like http://www.atmos-chem-phys.net/16/2309/2016/acp-16-2309-2016.xml
             new_path = link_path + '-'.join(['acp']+path_split) + '.xml'
-            find_by = 'body'
+            find_args = dict(name='body')
+            
         doc_url = parsed_link._replace(path=new_path).geturl()            
-        soup = prepare_soup(doc_url, 'lxml-xml')
-        if soup is not None:
-            text = soup.find(find_by).text
+        parser = 'lxml-xml'
         
-    elif journal.upper() in ['BML', 'AAS', 'MAP', 'JAC', 'TAC']:
+    elif journal.upper() in ['BML', 'AAS', 'MAP', 'JAC', 'TAC', 'CC', 'APJAS']:
         # Springer journals
         new_path = 'article'+parsed_link.path+'/fulltext.html'
         doc_url = parsed_link._replace(path=new_path).geturl()      
-
-        soup = prepare_soup(doc_url, 'lxml-html')
-        if soup is not None:
-            text = soup.find(find_by).text
+        parser = 'lxml-html'
+        find_args = dict(attrs={'class':'Para'})
             
     elif journal.upper() in ['ASL']:
         # Wiley journals with HTML available
@@ -52,11 +51,16 @@ def get_text(url, journal):
                    parsed_link.query.replace('%2F','/').replace('DOI=', '/') + \
                    '/full'
         doc_url = parsed_link._replace(path=new_path, query='').geturl()
-        soup = prepare_soup(doc_url, 'lxml-html')
-        if soup is not None:
-            text = soup.find(find_by).text
+        parser = 'lxml-html'
+        find_args = dict(attrs={'class':'para'})
             
     else:
         warnings.warn('Skip {} journal: no rule for it'.format(journal))
+        doc_url = None
+        
+    if doc_url is not None:
+        text = text_from_soup(doc_url, parser, find_args)
+    else:
+        text = ''
             
     return text

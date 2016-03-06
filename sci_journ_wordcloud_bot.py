@@ -37,7 +37,10 @@ for journ in j_list:
         if new_entry:
             text = get_text(url, journ['short_name'])
             
-            imgname = plot_wc(text)
+            if len(text) > 100:
+                imgname = plot_wc(text)
+            else:
+                imgname = None
             
             post_tweet(url, journ['short_name'], entry.title, imgname) 
             with open(logfile, 'a') as log:
