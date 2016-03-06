@@ -28,14 +28,14 @@ def assemble_tweet_text(ttl, short_url):
     else:
          ellipsis = ' '
     # title: 80 characters, bitly: 21, punctuation: 4 + image
-    tweet_text = ttl[0:80] + ellipsis + short_url
+    tweet_text = journal + ': ' +ttl[0:80] + ellipsis + short_url
     return tweet_text
 
 def post_tweet(url, journal, title, imgname=None):
     tw_api, bicon = init_api()
     short_url = bicon.shorten(url)['url']
     
-    tweet_text = assemble_tweet_text(title, short_url)
+    tweet_text = assemble_tweet_text(journal, title, short_url)
     # debug
     #print(tweet_text)
     #print(len(tweet_text))

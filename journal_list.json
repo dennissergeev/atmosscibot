@@ -1,34 +1,42 @@
 [
     {
         "name": "Atmospheric Chemistry and Physics Discussions",
+        "short_name": "ACPD",
         "rss": "http://www.atmos-chem-phys-discuss.net/xml/rss2_0.xml"
     },
     {
         "name": "Atmospheric Chemistry and Physics",
+        "short_name": "ACP",
         "rss": "http://www.atmos-chem-phys.net/xml/rss2_0.xml"
     },
     {
-        "name": "Earth and Planetary Science Letters",
-        "rss": "http://rss.sciencedirect.com/publication/science/0012821X_OA/open-access"
-    },
-    {
         "name": "Boundary-Layer Meteorology",
+        "short_name": "BML",
         "rss": "http://link.springer.com/search.rss?facet-journal-id=10546&package=openaccessarticles&search-within=Journal&query="
     },
     {
         "name": "Advances in Atmospheric Sciences",
+        "short_name": "AAS",
         "rss": "http://link.springer.com/search.rss?facet-journal-id=376&package=openaccessarticles&search-within=Journal&query="
     },
     {
         "name": "Meteorology and Atmospheric Physics",
+        "short_name": "MAP",
         "rss": "http://link.springer.com/search.rss?facet-journal-id=703&package=openaccessarticles&search-within=Journal&query="
     },
     {
         "name": "Journal of Atmospheric Chemistry",
+        "short_name": "JAC",
         "rss": "http://link.springer.com/search.rss?facet-journal-id=10874&package=openaccessarticles&search-within=Journal&query="
     },
     {
         "name": "Theoretical and Applied Climatology",
+        "short_name": "TAC",
         "rss": "http://link.springer.com/search.rss?facet-journal-id=704&package=openaccessarticles&search-within=Journal&query="
+    },
+    {
+        "name": "Atmospheric Science Letters",
+        "short_name": "ASL",
+        "rss": "http://onlinelibrary.wiley.com/rss/journal/10.1002/(ISSN)1530-261X"
     }
 ]
