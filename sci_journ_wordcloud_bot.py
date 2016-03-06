@@ -21,6 +21,11 @@ for journ in j_list:
     
     logfile = os.path.join(curdir, 'processed_entries_urls_'+journ['short_name']+'.log')
     for i, entry in enumerate(f.entries):
+        if journ['short_name'] == 'ASL' and 'author' in entry:
+            # Skip "Issue information"
+            if entry.author == '':
+                new_entry = False
+
         url = entry.link
         try:
             with open(logfile, 'r') as log:
