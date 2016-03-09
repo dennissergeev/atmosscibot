@@ -22,7 +22,7 @@ def get_text(url, journal):
     """Download XML/HTML doc and parse it"""
     parsed_link = urllib.parse.urlparse(url)
     
-    if journal.upper() in ['ACP', 'ACPD']:
+    if journal.upper() in ['ACP', 'ACPD', 'AMT']:
         # EGU journals
         link_path = parsed_link.path
         path_split = [s for s in link_path.split('/') if s]
@@ -32,7 +32,7 @@ def get_text(url, journal):
             find_args = dict(name='abstract')
         else:
             # links like http://www.atmos-chem-phys.net/16/2309/2016/acp-16-2309-2016.xml
-            new_path = link_path + '-'.join(['acp']+path_split) + '.xml'
+            new_path = link_path + '-'.join([journal.lower()]+path_split) + '.xml'
             find_args = dict(name='body')
             
         doc_url = parsed_link._replace(path=new_path).geturl()            
@@ -55,7 +55,7 @@ def get_text(url, journal):
         find_args = dict(attrs={'class':'para'})
             
     else:
-        warnings.warn('Skip {} journal: no rule for it'.format(journal))
+        warnings.warn('Skip {0} journal: no rule for it'.format(journal))
         doc_url = None
         
     if doc_url is not None:

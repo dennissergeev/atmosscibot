@@ -10,6 +10,11 @@
         "rss": "http://www.atmos-chem-phys.net/xml/rss2_0.xml"
     },
     {
+        "name": "Atmospheric Measurement Techniques",
+        "short_name": "AMT",
+        "rss": "http://www.atmos-meas-tech.net/xml/rss2_0.xml"
+    },
+    {
         "name": "Atmospheric Science Letters",
         "short_name": "ASL",
         "rss": "http://onlinelibrary.wiley.com/rss/journal/10.1002/(ISSN)1530-261X"
