@@ -22,7 +22,7 @@ def get_text(url, journal):
     """Download XML/HTML doc and parse it"""
     parsed_link = urllib.parse.urlparse(url)
     
-    if journal.upper() in ['ACP', 'ACPD', 'AMT']:
+    if journal.upper() in ['ACP', 'AMT']:
         # EGU journals
         link_path = parsed_link.path
         path_split = [s for s in link_path.split('/') if s]

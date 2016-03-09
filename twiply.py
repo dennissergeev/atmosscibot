@@ -36,7 +36,11 @@ def post_tweet(url, journal, title, imgname=None):
     tw_api, bicon = init_api()
     short_url = bicon.shorten(url)['url']
     
-    tweet_text = assemble_tweet_text(journal, title, short_url)
+    if 'discuss' in url:
+        journal_name = journal+'D'
+    else:
+        journal_name = journal
+    tweet_text = assemble_tweet_text(journal_name, title, short_url)
     # debug
     #print(tweet_text)
     #print(len(tweet_text))

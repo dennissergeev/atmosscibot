@@ -1,10 +1,5 @@
 [
     {
-        "name": "Atmospheric Chemistry and Physics Discussions",
-        "short_name": "ACPD",
-        "rss": "http://www.atmos-chem-phys-discuss.net/xml/rss2_0.xml"
-    },
-    {
         "name": "Atmospheric Chemistry and Physics",
         "short_name": "ACP",
         "rss": "http://www.atmos-chem-phys.net/xml/rss2_0.xml"
