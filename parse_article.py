@@ -78,7 +78,7 @@ def get_text(url, journal):
 
     elif journal.upper() in ['TA', 'TB']:
         # Tellus A/B
-        doc_url = parsed_link.get_url()
+        doc_url = parsed_link.geturl()
         parser = 'lxml-html'
         find_args = dict(name='div', attrs={'id':'articleHTML'})
         between_tags = [None, dict(name='h1', text='References')]
