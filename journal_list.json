@@ -1,5 +1,15 @@
 [
     {
+        "name": "Tellus A",
+        "shor_name": "TA",
+        "rss": "http://www.tellusa.net/index.php/tellusa/gateway/plugin/WebFeedGatewayPlugin/rss2"
+    },
+    {
+        "name": "Tellus B",
+        "shor_name": "TB",
+        "rss": "http://www.tellusb.net/index.php/tellusb/gateway/plugin/WebFeedGatewayPlugin/rss2"
+    },
+    {
         "name": "Atmospheric Chemistry and Physics",
         "short_name": "ACP",
         "rss": "http://www.atmos-chem-phys.net/xml/rss2_0.xml"

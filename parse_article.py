@@ -6,15 +6,34 @@ import bs4
 import urllib
 import warnings
 
-def text_from_soup(url, parser, find_args):
-    try:
-        with urllib.request.urlopen(url) as req:
-            doc = req.read()
-        soup = bs4.BeautifulSoup(doc, parser)
-        result = soup.find_all(**find_args)
-        return ''.join([i.text for i in result])
-    except urllib.request.HTTPError as e:
-        # return empty text if url is wrong
+def text_from_soup(url, parser, find_args, between_children=None): 
+    try: 
+        with urllib.request.urlopen(url) as req: 
+            doc = req.read() 
+        soup = bs4.BeautifulSoup(doc, parser) 
+        result = soup.find_all(**find_args) 
+    
+        if between_children is None:
+            return ''.join([i.text for i in result])
+        else:
+            assert len(between_children) == 2
+            for i, child_descr in enumerate(between_children):
+                if isinstance(child_descr, dict):
+                    child_tag = result[0].find_all(**child_descr)[0]
+                    between_children[i] = result[0].contents.index(child_tag)
+            children_subset = slice(*between_children)
+            text = ''
+            for child in result[0].contents[children_subset]:
+                try:
+                    text += child.text
+                except AttributeError:
+                    text += child.strip()
+                except:
+                    pass
+            return text
+
+    except urllib.request.HTTPError as e: 
+        # return empty text if url is wrong 
         return ''
 
 
@@ -37,6 +56,7 @@ def get_text(url, journal):
             
         doc_url = parsed_link._replace(path=new_path).geturl()            
         parser = 'lxml-xml'
+        between_tags = None
         
     elif journal.upper() in ['BML', 'AAS', 'MAP', 'JAC', 'TAC', 'CC', 'APJAS']:
         # Springer journals
@@ -44,6 +64,7 @@ def get_text(url, journal):
         doc_url = parsed_link._replace(path=new_path).geturl()      
         parser = 'lxml-html'
         find_args = dict(attrs={'class':'Para'})
+        between_tags = None
             
     elif journal.upper() in ['ASL']:
         # Wiley journals with HTML available
@@ -53,13 +74,21 @@ def get_text(url, journal):
         doc_url = parsed_link._replace(path=new_path, query='').geturl()
         parser = 'lxml-html'
         find_args = dict(attrs={'class':'para'})
-            
+        between_tags = None
+
+    elif journal.upper() in ['TA', 'TB']:
+        # Tellus A/B
+        doc_url = parsed_link.get_url()
+        parser = 'lxml-html'
+        find_args = dict(name='div', attrs={'id':'articleHTML'})
+        between_tags = [None, dict(name='h1', text='References')]
+
     else:
         warnings.warn('Skip {0} journal: no rule for it'.format(journal))
         doc_url = None
         
     if doc_url is not None:
-        text = text_from_soup(doc_url, parser, find_args)
+        text = text_from_soup(doc_url, parser, find_args, between_tags)
     else:
         text = ''
             
