@@ -20,7 +20,6 @@ def init_api():
 def assemble_tweet_text(journal, ttl, short_url):
     """Assemble tweet status"""
     c2del = [('\n', ' '),
-             ('\u2013', '-'),
              ('  ', ' ')]
     for c in c2del:
         ttl = ttl.replace(*c)

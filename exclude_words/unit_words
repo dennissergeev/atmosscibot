@@ -173,6 +173,7 @@ jig
 joule
 k
 kelvin
+kg
 kgf
 kilogram
 kilometer
@@ -251,6 +252,12 @@ pond
 pound
 poundal
 pp
+ppb
+ppbv
+ppm
+ppmv
+ppt
+pptv
 psi
 pt
 qt
