@@ -6,20 +6,20 @@ import bs4
 import urllib
 import warnings
 
-def text_from_soup(url, parser, find_args, between_children=None, leave_result=None): 
+def text_from_soup(url, parser, find_args, between_children=None, escape_result=None): 
     try: 
         with urllib.request.urlopen(url) as req: 
             doc = req.read() 
         soup = bs4.BeautifulSoup(doc, parser) 
         result = soup.find_all(**find_args)
         
-        if leave_result in not None:
-            assert isinstance(leave_result, dict)
+        if escape_result is not None:
+            assert isinstance(escape_result, dict)
             to_remove = []
             for tag in result:
-                headers = i.find_all(**leave_result)
-                if len(headers) == 0:
-                    to_remove.append(i)
+                found = tag.find_all(**escape_result)
+                if len(found) != 0:
+                    to_remove.append(tag)
             [result.remove(i) for i in to_remove]
     
         if between_children is None:
@@ -50,6 +50,9 @@ def extract_text(url, journal):
     """Download XML/HTML doc and parse it"""
     parsed_link = urllib.parse.urlparse(url)
     
+    between_tags = None
+    escape_result = None
+
     if journal.upper() in ['ACP', 'AMT']:
         # EGU journals
         link_path = parsed_link.path
@@ -65,7 +68,6 @@ def extract_text(url, journal):
             
         doc_url = parsed_link._replace(path=new_path).geturl()            
         parser = 'lxml-xml'
-        between_tags = None
         
     elif journal.upper() in ['BML', 'AAS', 'MAP', 'JAC', 'TAC', 'CC', 'APJAS']:
         # Springer journals
@@ -73,7 +75,6 @@ def extract_text(url, journal):
         doc_url = parsed_link._replace(path=new_path).geturl()      
         parser = 'lxml-html'
         find_args = dict(attrs={'class':'Para'})
-        between_tags = None
             
     elif journal.upper() in ['ASL']:
         # Wiley journals with HTML available
@@ -83,7 +84,6 @@ def extract_text(url, journal):
         doc_url = parsed_link._replace(path=new_path, query='').geturl()
         parser = 'lxml-html'
         find_args = dict(attrs={'class':'para'})
-        between_tags = None
 
     elif journal.upper() in ['TA', 'TB']:
         # Tellus A/B
@@ -97,15 +97,14 @@ def extract_text(url, journal):
         doc_url = parsed_link.geturl()
         parser = 'lxml-html'
         find_args = dict(name='div', attrs={'class':'xml-content'})
-        between_tags = None
-        leave_result = dict(name='h4', text='Abstract')
+        escape_result = dict(name='h4', text='References')
         
     else:
         warnings.warn('Skip {0} journal: no rule for it'.format(journal))
         doc_url = None
         
     if doc_url is not None:
-        text = text_from_soup(doc_url, parser, find_args, between_tags)
+        text = text_from_soup(doc_url, parser, find_args, between_tags, escape_result)
     else:
         text = ''
             
