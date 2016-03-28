@@ -2,6 +2,7 @@
 """
 Bot that creates word clouds from scientific articles and posts them to Twitter
 """
+from glob import glob
 import feedparser as fp
 import json
 import numpy as np
@@ -27,7 +28,7 @@ class AtmosSciBot(object):
         self.dpi = settings.get_dpi()
         self.width = settings.get_width()
         self.height = settings.get_height()
-        self.wordcloud_mask = self.get_wordcloud_mask()
+        self.wordcloud_mask = settings.get_wordcloud_mask()
         self.temp_dir = settings.get_temp_dir()
         self.temp_file = settings.get_temp_file()
         
@@ -58,10 +59,9 @@ class AtmosSciBot(object):
             journal_name = journal+'D'
         else:
             journal_name = journal
-            
+        return journal_name + ': ' + title    
         
-        
-    def make_imgname(self):
+    def make_img_file(self):
         output_dir = os.path.join(self.curdir, self.temp_dir)
         if not os.path.isdir(output_dir):
             os.mkdir(output_dir)
@@ -78,28 +78,30 @@ class AtmosSciBot(object):
                 exclude_words += f.read().split('\n')
         self.exclude_words = set(exclude_words)
 
-    def generate_wc(self, background_color=None):
+    def generate_wc(self, background_color='#ffffff'):
         """generate wordcloud and save to file"""       
         #fig_kw = dict(figsize=(self.width/self.dpi, self.height/self.dpi),
         #              dpi=self.dpi)
+        self.get_exclude_words()
         try:
             arr = np.array(Image.open(os.path.join(self.curdir, self.wordcloud_mask)))
 
-            wc = WordCloud(width=self.width, height=self.height,
-                           stopwords=self.exclude_words, 
-                           background_color=background_color, mode='RGBA', 
+            wc = WordCloud(width=self.width, height=self.height, \
+                           stopwords=self.exclude_words, \
+                           background_color=background_color, mode='RGBA', \
                            mask=arr).generate(self.text)
             
-            self.make_imgname()
+            self.make_img_file()
             wc.to_file(self.img_file)
             self.new_image = True
 
-        except Exception:
+        except Exception as e:
+            print(e)
             self.new_image = False
 
     def run(self):
         
-        with open(selg.j_list_path) as json_file:
+        with open(self.j_list_path) as json_file:
             j_list = json.load(json_file)
 
         for journ in j_list:
@@ -121,7 +123,7 @@ class AtmosSciBot(object):
                 if new_entry:
                     self.text = extract_text(url, j_short_name)
 
-                    if len(text) > self.minwords:
+                    if len(self.text) > self.minwords:
                         imgname = self.generate_wc()
                         if self.new_image:
                             imgname = self.img_file
@@ -139,11 +141,11 @@ class AtmosSciBot(object):
 
 if __name__ == '__main__':
     curdir = os.path.dirname(os.path.realpath(__file__))
-    s = Settings(os.path.join(curdir, 'settings.ini')
+    s = Settings(os.path.join(curdir, 'settings.ini'))
     twitter_api = TwitterApi(s.get_twitter_api_key(), s.get_twitter_api_secret(), 
                              s.get_twitter_access_token(), s.get_twitter_access_token_secret())
-    url_shortener = UrlShortener(api_name=s.get_url_shortener_api()
-                                 login=s.get_url_shortener_login(),
-                                 key=s.get_url_shortener_key())
+    url_shortener = UrlShortener(api_name=s.get_url_shortener_api(), \
+                                 login=s.get_url_shortener_login(), \
+                                 api_key=s.get_url_shortener_key())
     bot = AtmosSciBot(curdir, s, twitter_api, url_shortener)
     bot.run()

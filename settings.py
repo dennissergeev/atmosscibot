@@ -53,13 +53,13 @@ class Settings(object):
         return int(self.config[self.CONFIGS]['min_words'])
     
     def get_log_file_mask(self):
-        return int(self.config[self.CONFIGS]['log_file_mask'])
+        return self.config[self.CONFIGS]['log_file_mask']
     
     def get_journal_list(self):
-        return int(self.config[self.CONFIGS]['journal_list'])
+        return self.config[self.CONFIGS]['journal_list']
     
     def get_temp_dir(self):
-        return int(self.config[self.CONFIGS]['temp_dir'])
+        return self.config[self.CONFIGS]['temp_dir']
     
     def get_temp_file(self):
-        return int(self.config[self.CONFIGS]['temp_file'])
+        return self.config[self.CONFIGS]['temp_file']

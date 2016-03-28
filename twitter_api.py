@@ -20,7 +20,7 @@ class TwitterApi(object):
         c2del = [('\n', ' '),
                  ('  ', ' ')]
         for c in c2del:
-            ttl = ttl.replace(*c)
+            tweet_text = tweet_text.replace(*c)
         if len(tweet_text) > text_len:
              ellipsis = '... '
         else:
@@ -32,7 +32,7 @@ class TwitterApi(object):
     
     def post_tweet(self, tweet_text, short_url, imgname=None):
         """Update status with a wordcloud image"""
-        tweet_text = self.assemble_tweet_text(text_len, short_url)
+        tweet_text = self.assemble_tweet_text(tweet_text, short_url)
         # debug
         #print(tweet_text)
         #print(len(tweet_text))
