@@ -1,5 +1,20 @@
 [
     {
+        "name": "Advances in Meteorology",
+        "short_name": "AM",
+        "rss": "http://www.hindawi.com/journals/amete/rss.xml"
+    },
+    {
+        "name": "Journal of Climatology",
+        "short_name": "JCLI",
+        "rss": "http://www.hindawi.com/journals/jcli/rss.xml"
+    },
+    {
+        "name": "International Journal of Atmospheric Sciences",
+        "short_name": "IJAS",
+        "rss": "http://www.hindawi.com/journals/ijas/rss.xml"
+    },
+    {
         "name": "Tellus A",
         "short_name": "TA",
         "rss": "http://www.tellusa.net/index.php/tellusa/gateway/plugin/WebFeedGatewayPlugin/rss2"

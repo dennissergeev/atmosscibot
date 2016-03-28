@@ -6,12 +6,21 @@ import bs4
 import urllib
 import warnings
 
-def text_from_soup(url, parser, find_args, between_children=None): 
+def text_from_soup(url, parser, find_args, between_children=None, leave_result=None): 
     try: 
         with urllib.request.urlopen(url) as req: 
             doc = req.read() 
         soup = bs4.BeautifulSoup(doc, parser) 
-        result = soup.find_all(**find_args) 
+        result = soup.find_all(**find_args)
+        
+        if leave_result in not None:
+            assert isinstance(leave_result, dict)
+            to_remove = []
+            for tag in result:
+                headers = i.find_all(**leave_result)
+                if len(headers) == 0:
+                    to_remove.append(i)
+            [result.remove(i) for i in to_remove]
     
         if between_children is None:
             return ''.join([i.text for i in result])
@@ -82,7 +91,15 @@ def extract_text(url, journal):
         parser = 'lxml-html'
         find_args = dict(name='div', attrs={'id':'articleHTML'})
         between_tags = [None, dict(name='h1', text='References')]
-
+        
+    elif journal.upper() in ['AM', 'IJAS', 'JCLI']:
+        # Hindawi journals (by HTML)
+        doc_url = parsed_link.geturl()
+        parser = 'lxml-html'
+        find_args = dict(name='div', attrs={'class':'xml-content'})
+        between_tags = None
+        leave_result = dict(name='h4', text='Abstract')
+        
     else:
         warnings.warn('Skip {0} journal: no rule for it'.format(journal))
         doc_url = None
