@@ -45,7 +45,6 @@ class AtmosSciBot(object):
                     new_entry = False
                     break
         except FileNotFoundError:
-            #print('file not found')
             new_entry = True
         return new_entry
     
@@ -96,7 +95,6 @@ class AtmosSciBot(object):
             self.new_image = True
 
         except Exception as e:
-            print(e)
             self.new_image = False
 
     def run(self):
@@ -105,7 +103,7 @@ class AtmosSciBot(object):
             j_list = json.load(json_file)
 
         for journ in j_list:
-            logfile = self.log_file_mask.format(journal=journ['short_name'])
+            logfile = os.path.join(curdir, self.log_file_mask.format(journal=journ['short_name']))
             
             f = fp.parse(journ['rss'])
             j_short_name = journ['short_name']
@@ -118,7 +116,7 @@ class AtmosSciBot(object):
                         new_entry = False
 
                     
-                new_entry = self.check_new_entry(url, logfile)
+                new_entry = self.check_new_entry(logfile, url)
 
                 if new_entry:
                     self.text = extract_text(url, j_short_name)
