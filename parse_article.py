@@ -37,7 +37,7 @@ def text_from_soup(url, parser, find_args, between_children=None):
         return ''
 
 
-def get_text(url, journal):
+def extract_text(url, journal):
     """Download XML/HTML doc and parse it"""
     parsed_link = urllib.parse.urlparse(url)
     

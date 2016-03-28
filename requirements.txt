@@ -2,6 +2,5 @@ beautifulsoup4
 bitly_api
 feedparser
 lxml
-matplotlib
 wordcloud
 tweepy

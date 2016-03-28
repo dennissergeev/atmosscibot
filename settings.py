@@ -1,0 +1,65 @@
+import configparser
+
+class Settings(object):
+    def __init__(self, settings_file):
+        self.settings_file = settings_file
+        self.config = configparser.ConfigParser()
+        self.config.read(self.settings_file)
+        
+        self.TWITTER = 'twitter'
+        self.URLSHORT = 'urlshort'
+        self.CONFIGS = 'configs'
+
+    def get_twitter_api_key(self):
+        return self.config[self.TWITTER]['api_key']
+
+    def get_twitter_api_secret(self):
+        return self.config[self.TWITTER]['api_secret']
+
+    def get_twitter_access_token(self):
+        return self.config[self.TWITTER]['access_token']
+
+    def get_twitter_access_token_secret(self):
+        return self.config[self.TWITTER]['access_token_secret']
+    
+    def get_url_shortener_api(self):
+        return self.config[self.URLSHORT]['api_name']
+    
+    def get_url_shortener_login(self):
+        return self.config[self.URLSHORT]['api_login']
+    
+    def get_url_shortener_key(self):
+        return self.config[self.URLSHORT]['api_key']
+    
+    def get_url_shortener_api(self):
+        return self.config[self.URLSHORT]['api_name']
+    
+    def get_stopwords_dir(self):
+        return self.config[self.CONFIGS]['stopwords_dir']
+    
+    def get_wordcloud_mask(self):
+        return self.config[self.CONFIGS]['wordcloud_mask']
+        
+    def get_width(self):
+        return int(self.config[self.CONFIGS]['width'])
+
+    def get_height(self):
+        return int(self.config[self.CONFIGS]['height'])
+    
+    def get_dpi(self):
+        return int(self.config[self.CONFIGS]['dpi'])
+    
+    def get_min_words(self):
+        return int(self.config[self.CONFIGS]['min_words'])
+    
+    def get_log_file_mask(self):
+        return int(self.config[self.CONFIGS]['log_file_mask'])
+    
+    def get_journal_list(self):
+        return int(self.config[self.CONFIGS]['journal_list'])
+    
+    def get_temp_dir(self):
+        return int(self.config[self.CONFIGS]['temp_dir'])
+    
+    def get_temp_file(self):
+        return int(self.config[self.CONFIGS]['temp_file'])
