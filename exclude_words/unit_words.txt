@@ -156,6 +156,7 @@ h
 ha
 hartree
 hbar
+hpa
 hPa
 hectare
 henry
