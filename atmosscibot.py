@@ -11,6 +11,7 @@ import numpy as np
 import os
 from PIL import Image
 import time
+from tinydb import TinyDB, where
 from wordcloud import WordCloud, STOPWORDS
 import urllib
 
@@ -23,7 +24,7 @@ class AtmosSciBot(object):
     def __init__(self, curdir, settings, twitter_api, url_shortener):
         self.curdir = curdir
         self.j_list_path = os.path.join(self.curdir, settings.get_journal_list())
-        self.db_file_mask = settings.get_db_file_mask()
+        self.db_file = settings.get_db_file()
         
         # Word Cloud settings
         self.minwords = settings.get_min_words()
@@ -38,22 +39,14 @@ class AtmosSciBot(object):
         self.twitter_api = twitter_api
         self.url_shortener = url_shortener
         
-    def check_new_entry(self, dbfile, url):
-        try:
-            with open(dbfile, 'r') as log:
-                logged = log.read().split('\n')
-            new_entry = True
-            for l in logged:
-                if url == l:
-                    new_entry = False
-                    break
-        except FileNotFoundError:
-            new_entry = True
+    def check_new_entry(self, url):
+        query_result = self.DB.search(where('url')==url)
+        new_entry = False if len(query_result)>0 else True
         return new_entry
     
-    def write_entry(self, dbfile, url):
-        with open(dbfile, 'a') as log:
-            log.write(url + '\n')
+    def write_entry(self, url, j_short_name):
+        new_entry = dict(journal_short_name=j_short_name, url=url, datetime=datetime.utcnow().strftime('%Y%m%d%H%M%S'))
+        self.DB.insert(new_entry)
             
     def make_title(self, url, journal, title):
         if 'discuss' in url:
@@ -87,6 +80,7 @@ class AtmosSciBot(object):
         self.get_exclude_words()
         try:
             arr = np.array(Image.open(os.path.join(self.curdir, self.wordcloud_mask)))
+            # Other masks can be extracted from Font-Awesome (http://minimaxir.com/2016/05/wordclouds/)
 
             wc = WordCloud(width=self.width, height=self.height, \
                            stopwords=self.exclude_words, \
@@ -101,13 +95,13 @@ class AtmosSciBot(object):
             self.error_in_wordcloud_gen = e
 
     def run(self):
+
+        self.DB = TinyDB(os.path.join(curdir, self.db_file))
         
         with open(self.j_list_path) as json_file:
             j_list = json.load(json_file)
 
         for journ in j_list:
-            dbfile = os.path.join(curdir, self.db_file_mask.format(journal=journ['short_name']))
-            
             f = fp.parse(journ['rss'])
             j_short_name = journ['short_name']
             logging.info('({jshort}) Parsed RSS of {jname}'.format(jname=journ['name'], jshort=j_short_name))
@@ -120,7 +114,7 @@ class AtmosSciBot(object):
                     if entry.author == '':
                         new_entry = False
 
-                new_entry = self.check_new_entry(dbfile, url)
+                new_entry = self.check_new_entry(url)
 
                 if new_entry:
                     logging.info('({jshort}) New entry in: {url}'.format(jshort=j_short_name, url=entry.url))
@@ -145,7 +139,7 @@ class AtmosSciBot(object):
                     
                     self.twitter_api.post_tweet(ttl, short_url, imgname)
                     
-                    self.write_entry(dbfile, url)
+                    self.write_entry(url, j_short_name)
 
 
 if __name__ == '__main__':

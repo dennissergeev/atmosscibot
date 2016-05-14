@@ -4,3 +4,4 @@ feedparser
 lxml
 wordcloud
 tweepy
+tinydb
