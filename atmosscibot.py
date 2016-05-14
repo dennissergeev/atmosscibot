@@ -23,7 +23,7 @@ class AtmosSciBot(object):
     def __init__(self, curdir, settings, twitter_api, url_shortener):
         self.curdir = curdir
         self.j_list_path = os.path.join(self.curdir, settings.get_journal_list())
-        self.log_file_mask = settings.get_log_file_mask()
+        self.db_file_mask = settings.get_db_file_mask()
         
         # Word Cloud settings
         self.minwords = settings.get_min_words()
@@ -38,9 +38,9 @@ class AtmosSciBot(object):
         self.twitter_api = twitter_api
         self.url_shortener = url_shortener
         
-    def check_new_entry(self, logfile, url):
+    def check_new_entry(self, dbfile, url):
         try:
-            with open(logfile, 'r') as log:
+            with open(dbfile, 'r') as log:
                 logged = log.read().split('\n')
             new_entry = True
             for l in logged:
@@ -51,8 +51,8 @@ class AtmosSciBot(object):
             new_entry = True
         return new_entry
     
-    def write_entry(self, logfile, url):
-        with open(logfile, 'a') as log:
+    def write_entry(self, dbfile, url):
+        with open(dbfile, 'a') as log:
             log.write(url + '\n')
             
     def make_title(self, url, journal, title):
@@ -106,11 +106,11 @@ class AtmosSciBot(object):
             j_list = json.load(json_file)
 
         for journ in j_list:
-            logfile = os.path.join(curdir, self.log_file_mask.format(journal=journ['short_name']))
+            dbfile = os.path.join(curdir, self.db_file_mask.format(journal=journ['short_name']))
             
             f = fp.parse(journ['rss'])
             j_short_name = journ['short_name']
-            logging.info('({jshort}) Parsed RSS of {jname}'.format(j=journ['name'], jshort=j_short_name)
+            logging.info('({jshort}) Parsed RSS of {jname}'.format(jname=journ['name'], jshort=j_short_name))
             
             for i, entry in enumerate(f.entries):
                 url = entry.link
@@ -120,10 +120,10 @@ class AtmosSciBot(object):
                     if entry.author == '':
                         new_entry = False
 
-                new_entry = self.check_new_entry(logfile, url)
+                new_entry = self.check_new_entry(dbfile, url)
 
                 if new_entry:
-                    logging.info('({jshort}) New entry in: {url}'.format(jshort=j_short_name, url=entry.url)
+                    logging.info('({jshort}) New entry in: {url}'.format(jshort=j_short_name, url=entry.url))
                     self.text = extract_text(url, j_short_name)
 
                     if len(self.text) > self.minwords:
@@ -132,12 +132,12 @@ class AtmosSciBot(object):
                             imgname = self.img_file
                         else:
                             logging.warning('({jshort}) Wordcloud generation ERR: {e}'.format(jshort=j_short_name,
-                                                                                              e=self.error_in_wordcloud_gen)
+                                                                                              e=self.error_in_wordcloud_gen))
                     else:
                         imgname = None
                         logging.warning('({jshort}) Text length {textlen} is less than {minlen}'.format(jshort=j_short_name,
                                                                                                         textlen=len(self.text),
-                                                                                                        minlen=(self.minwords))
+                                                                                                        minlen=(self.minwords)))
                         
                     ttl = self.make_title(url, j_short_name, entry.title)
                     
@@ -145,7 +145,7 @@ class AtmosSciBot(object):
                     
                     self.twitter_api.post_tweet(ttl, short_url, imgname)
                     
-                    self.write_entry(logfile, url)
+                    self.write_entry(dbfile, url)
 
 
 if __name__ == '__main__':
@@ -155,12 +155,12 @@ if __name__ == '__main__':
     s = Settings(os.path.join(curdir, 'settings.ini'))
     # Set up logging
     log_dir = os.path.join(curdir, s.get_log_dirname())
-    os.mkdir(log_dir) if not os.path.isdir(log_dir)
-    log_file = os.path.join(log_dir, 
-                            s.get_log_filename()).format(datetime=datetime.utcnow().strftime('%Y%m%d%H%M%S')
-    logging.basicConfig(filename=logfile, filemode='a',
-                        format='%(asctime)s %(message)s',
-                        datefmt='%Y%m%d %H:%M:%S',
+    if not os.path.isdir(log_dir): os.mkdir(log_dir)
+    log_file = os.path.join(log_dir,
+                            s.get_log_filename().format(datetime=datetime.utcnow().strftime('%Y%m%d%H%M%S')))
+    logging.basicConfig(filename=log_file, filemode='a',\
+                        format='%(asctime)s %(message)s',\
+                        datefmt='%Y%m%d %H:%M:%S',\
                         level=logging.DEBUG)
 
     twitter_api = TwitterApi(s.get_twitter_api_key(), s.get_twitter_api_secret(), 
