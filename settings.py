@@ -52,8 +52,14 @@ class Settings(object):
     def get_min_words(self):
         return int(self.config[self.CONFIGS]['min_words'])
     
-    def get_log_file_mask(self):
-        return self.config[self.CONFIGS]['log_file_mask']
+    def get_log_dirname(self):
+        return self.config[self.CONFIGS]['log_dirname']
+    
+    def get_log_filename(self):
+        return self.config[self.CONFIGS]['log_filename']
+    
+    def get_db_file_mask(self):
+        return self.config[self.CONFIGS]['db_file_mask']
     
     def get_journal_list(self):
         return self.config[self.CONFIGS]['journal_list']
