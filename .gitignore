@@ -2,3 +2,4 @@ settings.ini
 *.pyc
 .ipynb_checkpoints
 *.log
+processed_entries*
