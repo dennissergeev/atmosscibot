@@ -11,6 +11,7 @@ Da
 F
 Fr
 Gy
+GHz
 H
 Hg
 Hz
