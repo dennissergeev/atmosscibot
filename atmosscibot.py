@@ -118,7 +118,7 @@ class AtmosSciBot(object):
                 new_entry = self.check_new_entry(url)
 
                 if new_entry:
-                    self.logger.info('({jshort}) New entry in: {url}'.format(jshort=j_short_name, url=entry.url))
+                    self.logger.info('({jshort}) New entry in: {url}'.format(jshort=j_short_name, url=url))
                     self.text = extract_text(url, j_short_name)
 
                     if len(self.text) > self.minwords:
