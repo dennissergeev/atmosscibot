@@ -3,3 +3,4 @@ settings.ini
 .ipynb_checkpoints
 *.log
 processed_entries*
+latest_wordcloud/*

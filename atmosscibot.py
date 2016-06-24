@@ -61,7 +61,7 @@ class AtmosSciBot(object):
         output_dir = os.path.join(self.curdir, self.temp_dir)
         if not os.path.isdir(output_dir):
             os.mkdir(output_dir)
-        self.img_file = os.path.join(output_dir, self.temp_file)
+        self.img_file = os.path.join(output_dir, self.temp_file.format(datetime=datetime.utcnow().strftime('%Y%m%d%H%M%S')))
     
     def get_exclude_words(self):
         """ list of words to exclude """
@@ -141,6 +141,8 @@ class AtmosSciBot(object):
                     self.twitter_api.post_tweet(ttl, short_url, imgname)
                     
                     self.write_entry(url, j_short_name)
+
+                    time.sleep(60)
 
 
 if __name__ == '__main__':
