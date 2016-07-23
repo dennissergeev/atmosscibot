@@ -3,15 +3,21 @@
 Retrieve journal article and get text
 """
 import bs4
+import requests
 import urllib
 import warnings
 
 
 def text_from_soup(url, parser, find_args,
                    between_children=None, escape_result=None):
-    try:
-        with urllib.request.urlopen(url) as req:
-            doc = req.read()
+
+    req = requests.get(url)
+
+    if req.status_code == 200:
+        # try:
+        #     with urllib.request.urlopen(url) as req:
+        #         doc = req.read()
+        doc = req.content
         soup = bs4.BeautifulSoup(doc, parser)
         result = soup.find_all(**find_args)
 
@@ -42,8 +48,8 @@ def text_from_soup(url, parser, find_args,
                 except:
                     pass
             return text
-
-    except urllib.request.HTTPError as e:
+    else:
+        # except urllib.request.HTTPError as e:
         # return empty text if url is wrong
         return ''
 
@@ -77,7 +83,7 @@ def extract_text(url, journal):
 
     elif journal.upper() in ['BML', 'AAS', 'MAP', 'JAC', 'TAC', 'CC', 'APJAS']:
         # Springer journals
-        new_path = 'article'+parsed_link.path+'/fulltext.html'
+        new_path = 'article{}/fulltext.html'.format(parsed_link.path)
         doc_url = parsed_link._replace(path=new_path).geturl()
         parser = 'lxml-html'
         find_args = dict(attrs={'class': 'Para'})
@@ -104,6 +110,17 @@ def extract_text(url, journal):
         parser = 'lxml-html'
         find_args = dict(name='div', attrs={'class': 'xml-content'})
         escape_result = dict(name='h4', text='References')
+
+    elif journal.upper() in ['BAMS']:
+        # American Meteorological Society journals
+        new_path = parsed_link.path.replace('abs', 'full')
+        doc_url = parsed_link._replace(path=new_path, query='').geturl()
+        parser = 'lxml-html'
+        find_args = dict(name='p',
+                         attrs={'xmlns:mml':
+                                'http://www.w3.org/1998/Math/MathML',
+                                'xmlns:xsi':
+                                'http://www.w3.org/2001/XMLSchema-instance'})
 
     else:
         warnings.warn('Skip {0} journal: no rule for it'.format(journal))
