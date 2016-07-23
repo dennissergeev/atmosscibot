@@ -1,7 +1,9 @@
+python=3
 beautifulsoup4
 bitly_api
 feedparser
 lxml
-wordcloud
-tweepy
+requests
 tinydb
+tweepy
+wordcloud
