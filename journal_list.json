@@ -45,6 +45,11 @@
         "rss": "http://onlinelibrary.wiley.com/rss/journal/10.1002/(ISSN)1530-261X"
     },
     {
+        "name": "Journal of Advances in Modeling Earth Systems",
+        "short_name": "JAMES",
+        "rss": "http://onlinelibrary.wiley.com/rss/journal/10.1002/(ISSN)1942-2466"
+    },
+    {
         "name": "Boundary-Layer Meteorology",
         "short_name": "BML",
         "rss": "http://link.springer.com/search.rss?facet-journal-id=10546&package=openaccessarticles&search-within=Journal&query="

@@ -88,14 +88,17 @@ def extract_text(url, journal):
         parser = 'lxml-html'
         find_args = dict(attrs={'class': 'Para'})
 
-    elif journal.upper() in ['ASL']:
-        # Wiley journals with HTML available
+    elif journal.upper() in ['ASL', 'JAMES']:
+        # Wiley journals
         new_path = '{}{}/full'.format(parsed_link.path.replace('/resolve', ''),
                                       parsed_link.query.
                                       replace('%2F', '/').replace('DOI=', '/'))
         doc_url = parsed_link._replace(path=new_path, query='').geturl()
         parser = 'lxml-html'
-        find_args = dict(attrs={'class': 'para'})
+        # find_args = dict(attrs={'class': 'para'})
+        # This is probably better (although excludes abstract):
+        find_args = dict(name='section',
+                         attrs={'class': 'article-section article-body-section'})
 
     elif journal.upper() in ['TA', 'TB']:
         # Tellus A/B
