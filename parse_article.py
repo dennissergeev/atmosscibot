@@ -9,6 +9,7 @@ import warnings
 
 
 def text_from_soup(url, parser, find_args,
+                   check_for_open_access=None,
                    between_children=None, escape_result=None):
 
     req = requests.get(url)
@@ -19,7 +20,14 @@ def text_from_soup(url, parser, find_args,
         #         doc = req.read()
         doc = req.content
         soup = bs4.BeautifulSoup(doc, parser)
-        result = soup.find_all(**find_args)
+        if check_for_open_access is not None:
+            oa_check = soup.find_all(**check_for_open_access)
+            if len(oa_check) > 0:
+                result = soup.find_all(**find_args)
+            else:
+                return ''
+        else:
+            result = soup.find_all(**find_args)
 
         if escape_result is not None:
             assert isinstance(escape_result, dict)
@@ -60,6 +68,7 @@ def extract_text(url, journal):
 
     between_tags = None
     escape_result = None
+    check_for_open_access = None
 
     if journal.upper() in ['ACP', 'AMT']:
         # EGU journals
@@ -88,7 +97,7 @@ def extract_text(url, journal):
         parser = 'lxml-html'
         find_args = dict(attrs={'class': 'Para'})
 
-    elif journal.upper() in ['ASL', 'JAMES']:
+    elif journal.upper() in ['ASL', 'JAMES', 'JGRA']:
         # Wiley journals
         new_path = '{}{}/full'.format(parsed_link.path.replace('/resolve', ''),
                                       parsed_link.query.
@@ -98,7 +107,12 @@ def extract_text(url, journal):
         # find_args = dict(attrs={'class': 'para'})
         # This is probably better (although excludes abstract):
         find_args = dict(name='section',
-                         attrs={'class': 'article-section article-body-section'})
+                         attrs={'class':
+                                'article-section article-body-section'})
+        if journal.upper() in ['JGRA']:
+            _class_attr = "article-type article-type--open-access"
+            check_for_open_access = dict(name='span',
+                                         attrs={'class': _class_attr})
 
     elif journal.upper() in ['TA', 'TB']:
         # Tellus A/B
@@ -131,6 +145,7 @@ def extract_text(url, journal):
 
     if doc_url is not None:
         text = text_from_soup(doc_url, parser, find_args,
+                              check_for_open_access,
                               between_tags, escape_result)
     else:
         text = ''

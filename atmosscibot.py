@@ -159,7 +159,7 @@ class AtmosSciBot(object):
 
                     self.write_entry(url, j_short_name)
 
-                    time.sleep(60)
+                    time.sleep(10)
 
 
 if __name__ == '__main__':

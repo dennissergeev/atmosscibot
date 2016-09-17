@@ -50,6 +50,11 @@
         "rss": "http://onlinelibrary.wiley.com/rss/journal/10.1002/(ISSN)1942-2466"
     },
     {
+        "name": "Journal of Geophysical Research: Atmospheres",
+        "short_name": "JGRA",
+        "rss": "http://onlinelibrary.wiley.com/rss/journal/10.1002/(ISSN)2169-8996"
+    },
+    {
         "name": "Boundary-Layer Meteorology",
         "short_name": "BLM",
         "rss": "http://link.springer.com/search.rss?facet-journal-id=10546&package=openaccessarticles&search-within=Journal&query="
