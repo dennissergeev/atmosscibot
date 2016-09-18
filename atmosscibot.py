@@ -134,24 +134,21 @@ class AtmosSciBot(object):
                     self.text = extract_text(url, j_short_name)
 
                     if len(self.text) > self.minwords:
-                        imgname = self.generate_wc()
+                        self.generate_wc()
                         if self.error_in_wordcloud_gen is None:
                             imgname = self.img_file
+                            ttl = self.make_title(url, j_short_name,
+                                                  entry.title)
+                            short_url = self.url_shortener.shorten(url)
+                            self.twitter_api.post_tweet(ttl, short_url,
+                                                        imgname)
+                            self.write_entry(url, j_short_name)
+                            time.sleep(10)
                         else:
                             _warn = '({jshort}) Wordcloud generation ERR: {e}'
                             _msg = _warn.format(jshort=j_short_name,
                                                 e=self.error_in_wordcloud_gen)
                             self.logger.warning(_msg)
-
-                        ttl = self.make_title(url, j_short_name, entry.title)
-
-                        short_url = self.url_shortener.shorten(url)
-
-                        self.twitter_api.post_tweet(ttl, short_url, imgname)
-
-                        self.write_entry(url, j_short_name)
-
-                        time.sleep(10)
                     else:
                         imgname = None
                         _warn = '({jshort}) Text length {textlen}'\
