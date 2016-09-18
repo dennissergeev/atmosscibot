@@ -107,11 +107,11 @@ class AtmosSciBot(object):
             self.error_in_wordcloud_gen = e
 
     def save_mentions(self, mentions):
-        with open(self.mentions_file, 'wb') as f:
+        with open(os.path.join(self.curdir, self.mentions_file), 'wb') as f:
             pickle.dump(mentions, f)
 
     def load_mentions(self):
-        with open(self.mentions_file, 'rb') as f:
+        with open(os.path.join(self.curdir, self.mentions_file), 'rb') as f:
             try:
                 mentions = pickle.load(f)
             except:
