@@ -31,9 +31,16 @@ class TwitterApi(object):
         tweet_text = tweet_text[0:text_len] + ellipsis + short_url
         return tweet_text
 
-    def post_tweet(self, tweet_text, short_url, imgname=None):
+    def post_tweet(self, tweet_text, short_url,
+                   imgname=None, in_reply_to_status_id=None):
         """Update status with a wordcloud image"""
-        tweet_text = self.assemble_tweet_text(tweet_text, short_url)
+        if in_reply_to_status_id is None:
+            tweet_text = self.assemble_tweet_text(tweet_text, short_url)
+            kwargs = dict(status=tweet_text)
+        else:
+            kwargs = dict(status=tweet_text,
+                          in_reply_to_status_id=in_reply_to_status_id)
+
         # debug
         # print(tweet_text)
         # print(len(tweet_text))
@@ -43,11 +50,11 @@ class TwitterApi(object):
             # print(tweet_text)
             # print(len(tweet_text))
             try:
-                self.twitter_api.update_with_media(imgname, status=tweet_text)
+                self.twitter_api.update_with_media(imgname, **kwargs)
             except tweepy.TweepError as e:
                 # print('wait...')
                 time.wait(self.wait_seconds)
-                self.twitter_api.update_with_media(imgname, status=tweet_text)
+                self.twitter_api.update_with_media(imgname, **kwargs)
         else:
             # post tweet without a wordcloud
-            self.twitter_api.update_status(tweet_text)
+            self.twitter_api.update_status(**kwargs)

@@ -10,6 +10,7 @@ import logging
 import numpy as np
 import os
 from PIL import Image
+import pickle
 import time
 from tinydb import TinyDB, where
 from wordcloud import WordCloud, STOPWORDS
@@ -22,6 +23,7 @@ from twitter_api import TwitterApi
 
 class AtmosSciBot(object):
     def __init__(self, curdir, settings, twitter_api, url_shortener, logger):
+        self.BOT_NAME = settings.get_bot_name()
         self.curdir = curdir
         self.logger = logger
         self.j_list_path = os.path.join(self.curdir,
@@ -37,6 +39,7 @@ class AtmosSciBot(object):
         self.wordcloud_mask = settings.get_wordcloud_mask()
         self.temp_dir = settings.get_temp_dir()
         self.temp_file = settings.get_temp_file()
+        self.mentions_file = settings.get_mentions_file()
 
         self.twitter_api = twitter_api
         self.url_shortener = url_shortener
@@ -103,14 +106,137 @@ class AtmosSciBot(object):
         except Exception as e:
             self.error_in_wordcloud_gen = e
 
+    def save_mentions(self, mentions):
+        with open(self.mentions_file, 'wb') as f:
+            pickle.dump(mentions, f)
+
+    def load_mentions(self):
+        with open(self.mentions_file, 'rb') as f:
+            try:
+                mentions = pickle.load(f)
+            except:
+                mentions = []
+        return mentions
+
+    def get_new_mentions(self, mentions, last_mention_id=1):
+        """ Download the new mentions """
+        if mentions:
+            last_mention_id = mentions[0].id_str
+        else:
+            last_mention_id = last_mention_id
+        new_mentions = (self
+                        .twitter_api
+                        .twitter_api
+                        .mentions_timeline(last_mention_id))
+        mentions = new_mentions + mentions  # newest first
+        return mentions
+
+    def parse_request(self, mention):
+        contains_j_name = False
+        j_short_name = None
+        url = None
+        contains_magic_word = 'please' in mention.text.lower()
+        hashtags = [i['text'] for i in mention.entities['hashtags']]
+        if len(hashtags) == 1:
+            j_short_name = hashtags[0].upper()
+            j_names = [j['short_name'] for j in self.j_list]
+            # check if hashtags contain a correct journal short name
+            contains_j_name = j_short_name in j_names
+            # any(i in j_names for i in hashtags)
+        contains_url = len(mention.entities['urls']) == 1
+        if contains_url:
+            url = mention.entities['urls'][0]['expanded_url']
+        is_correct = (contains_magic_word
+                      and contains_j_name
+                      and contains_url)
+        return is_correct, url, j_short_name
+
+    def make_reply(user_name, url, err_msg=None):
+        if err_msg is None:
+            reply = '@{}, here\'s a word cloud for this article {}'
+            reply = reply.format(user_name, url)
+        else:
+            reply = 'Sorry, @{}, unable to create a word cloud. {}'
+            reply = reply.format(user_name, err_msg)
+        return reply
+
+    def handle_mentions(self):
+        """
+        Handle the mentions of this twitter bot
+        to generate wordclouds on demand
+        """
+        mentions_handled = 0
+        mentions = self.load_mentions()
+        mentions = self.get_new_mentions(mentions,
+                                         self.settings.read_last_mention_id())
+        self.save_mentions(mentions)
+
+        while mentions:
+            mention = mentions.pop()
+            mentions_handled += 1
+
+            in_reply_to_status_id = mention.id_str
+            self.settings.write_last_mention_id(in_reply_to_status_id)
+
+            if mentions and mentions_handled % 10 == 0:
+                old_num_mentions = len(mentions)
+                mentions = self.get_new_mentions(mentions,
+                                                 self.settings
+                                                 .read_last_mention_id())
+                self.save_mentions(mentions)
+                _msg = '{0} new mentions, now to handle {1} mentions in total'
+                self.logger.info(_msg.format(len(mentions)-old_num_mentions,
+                                             len(mentions)))
+
+            _msg = 'Handling mention: {0}, from: @{1}, with id: {2}'
+            self.logger.info(_msg.format(mention.text,
+                                         mention.user.screen_name,
+                                         mention.id_str))
+
+            user_name = mention.user.screen_name
+            if user_name == self.BOT_NAME:
+                self.logger.info('Skipping this self mention')
+                self.save_mentions(mentions)
+                continue
+
+            kw = dict(imgname=None,
+                      in_reply_to_status_id=mention.id_str)
+            is_correct, url, j_short_name = self.parse_request(mention)
+            if is_correct:
+                # URL must be correct and directly lead to
+                # webpage with text to be parsed (unlike the ones in RSS feeds)
+                self.text = extract_text(url, j_short_name, url_ready=True)
+                if len(self.text) > self.minwords:
+                    self.generate_wc()
+                    if self.error_in_wordcloud_gen is None:
+                        imgname = self.img_file
+                        short_url = self.url_shortener.shorten(url)
+                        reply = self.make_reply(user_name, short_url)
+                        kw['imgname'] = imgname
+                    else:
+                        # TODO: specify the problem
+                        err_msg = 'Check the URL'
+                        reply = self.make_reply(user_name, short_url,
+                                                err_msg=err_msg)
+                else:
+                    err_msg = 'There is not enough text'
+                    reply = self.make_reply(user_name, short_url,
+                                            err_msg=err_msg)
+            else:
+                err_msg = 'Your request is not correct'
+                reply = self.make_reply(user_name, short_url,
+                                        err_msg=err_msg)
+            self.twitter_api.post_tweet(reply, short_url, **kw)
+
     def run(self):
+        with open(self.j_list_path) as json_file:
+            self.j_list = json.load(json_file)
+
+        self.handle_mentions()
 
         self.DB = TinyDB(os.path.join(curdir, self.db_file))
 
-        with open(self.j_list_path) as json_file:
-            j_list = json.load(json_file)
-
-        for journ in j_list:
+        for journ in self.j_list:
             f = fp.parse(journ['rss'])
             j_short_name = journ['short_name']
             _msg = '({jshort}) Parsed RSS of {jname}'

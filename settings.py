@@ -2,6 +2,9 @@
 import configparser
 
 
+NO_MENTIONS = 1
+
+
 class Settings(object):
     def __init__(self, settings_file):
         self.settings_file = settings_file
@@ -68,3 +71,24 @@ class Settings(object):
 
     def get_temp_file(self):
         return self.config[self.CONFIGS]['temp_file']
+
+    def get_mentions_file(self):
+        return self.config[self.CONFIGS]['mentions_file']
+
+    def write_last_mention_id(self, id):
+        """ Save to file the last mention id """
+        self.config[self.CONFIGS]['lastmentionid'] = str(id)
+        self._write()
+
+    def _write(self):
+        with open(self.settings_file, 'w') as configfile:
+            self.config.write(configfile)
+
+    def read_last_mention_id(self):
+        try:
+            return self.config[self.CONFIGS]['lastmentionid']
+        except KeyError:
+            return self.NO_MENTIONS
+
+    def get_bot_name(self):
+        return self.config[self.CONFIGS]['botname']

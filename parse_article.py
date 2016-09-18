@@ -62,7 +62,7 @@ def text_from_soup(url, parser, find_args,
         return ''
 
 
-def extract_text(url, journal):
+def extract_text(url, journal, url_ready=False):
     """Download XML/HTML doc and parse it"""
     parsed_link = urllib.parse.urlparse(url)
 
@@ -86,14 +86,19 @@ def extract_text(url, journal):
                                          '-'.join([journal.lower()] +
                                                   path_split))
             find_args = dict(name='body')
-
-        doc_url = parsed_link._replace(path=new_path).geturl()
+        if url_ready:
+            doc_url = parsed_link.geturl()
+        else:
+            doc_url = parsed_link._replace(path=new_path).geturl()
         parser = 'lxml-xml'
 
     elif journal.upper() in ['BML', 'AAS', 'MAP', 'JAC', 'TAC', 'CC', 'APJAS']:
         # Springer journals
         new_path = 'article{}/fulltext.html'.format(parsed_link.path)
-        doc_url = parsed_link._replace(path=new_path).geturl()
+        if url_ready:
+            doc_url = parsed_link.geturl()
+        else:
+            doc_url = parsed_link._replace(path=new_path).geturl()
         parser = 'lxml-html'
         find_args = dict(attrs={'class': 'Para'})
 
@@ -102,7 +107,10 @@ def extract_text(url, journal):
         new_path = '{}{}/full'.format(parsed_link.path.replace('/resolve', ''),
                                       parsed_link.query.
                                       replace('%2F', '/').replace('DOI=', '/'))
-        doc_url = parsed_link._replace(path=new_path, query='').geturl()
+        if url_ready:
+            doc_url = parsed_link.geturl()
+        else:
+            doc_url = parsed_link._replace(path=new_path, query='').geturl()
         parser = 'lxml-html'
         # find_args = dict(attrs={'class': 'para'})
         # This is probably better (although excludes abstract):
@@ -131,7 +139,10 @@ def extract_text(url, journal):
     elif journal.upper() in ['BAMS']:
         # American Meteorological Society journals
         new_path = parsed_link.path.replace('abs', 'full')
-        doc_url = parsed_link._replace(path=new_path, query='').geturl()
+        if url_ready:
+            doc_url = parsed_link.geturl()
+        else:
+            doc_url = parsed_link._replace(path=new_path, query='').geturl()
         parser = 'lxml-html'
         find_args = dict(name='p',
                          attrs={'xmlns:mml':
