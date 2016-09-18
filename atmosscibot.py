@@ -168,9 +168,12 @@ class AtmosSciBot(object):
         2) is easily expandable
         """
         self.mentions_db = TinyDB(os.path.join(curdir, self.mentions_file))
-        stored_mentions = self.mentions_db.all()
-        the_most_recent = sorted(stored_mentions,
-                                 key=lambda k: k['datetime'])[-1]['id_str']
+        stored_mentions = sorted(self.mentions_db.all(),
+                                 key=lambda k: k['datetime'])
+        if len(stored_mentions) > 0:
+            the_most_recent = stored_mentions[-1]['id_str']
+        else:
+            the_most_recent = 1
         # get only the latest mentions
         mentions = self.get_new_mentions(the_most_recent)
         for mention in mentions:
