@@ -140,7 +140,7 @@ class AtmosSciBot(object):
         return reply
 
     def check_new_mention(self, mention):
-        query_result = self.DB.search(where('id_str') == mention.id_str)
+        query_result = self.mentions_db.search(where('id_str') == mention.id_str)
         new_mention = False if len(query_result) > 0 else True
         return new_mention
 
@@ -148,7 +148,7 @@ class AtmosSciBot(object):
         tstamp = mention.created_at.strftime('%Y%m%d%H%M%S')
         new_mention = dict(id_str=mention.id_str,
                            datetime=tstamp)
-        self.DB.insert(new_mention)
+        self.mentions_db.insert(new_mention)
 
     def get_new_mentions(self, last_mention_id=1):
         """ Download the new mentions """
@@ -180,16 +180,14 @@ class AtmosSciBot(object):
             # may be redundant...
             new_mention = self.check_new_mention(mention)
             if new_mention:
-                _msg = 'Handling mention: {0}, from: @{1}, with id: {2}'
-                self.logger.info(_msg.format(mention.text,
-                                             mention.user.screen_name,
+                _msg = 'Handling mention: from: @{}, with id: {}'
+                self.logger.info(_msg.format(mention.user.screen_name,
                                              mention.id_str))
                 self.save_mention(mention)
 
                 user_name = mention.user.screen_name
                 if user_name == self.BOT_NAME:
                     self.logger.info('Skipping this self mention')
-                    self.save_mentions(mentions)
                     continue
 
                 kw = dict(imgname=None,
