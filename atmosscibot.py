@@ -23,23 +23,24 @@ from twitter_api import TwitterApi
 
 class AtmosSciBot(object):
     def __init__(self, curdir, settings, twitter_api, url_shortener, logger):
-        self.BOT_NAME = settings.get_bot_name()
+        self.settings = settings
+        self.BOT_NAME = self.settings.get_bot_name()
         self.curdir = curdir
         self.logger = logger
         self.j_list_path = os.path.join(self.curdir,
-                                        settings.get_journal_list())
-        self.db_file = settings.get_db_file()
+                                        self.settings.get_journal_list())
+        self.db_file = self.settings.get_db_file()
 
         # Word Cloud settings
-        self.minwords = settings.get_min_words()
-        self.stopwords_dir = settings.get_stopwords_dir()
-        self.dpi = settings.get_dpi()
-        self.width = settings.get_width()
-        self.height = settings.get_height()
-        self.wordcloud_mask = settings.get_wordcloud_mask()
-        self.temp_dir = settings.get_temp_dir()
-        self.temp_file = settings.get_temp_file()
-        self.mentions_file = settings.get_mentions_file()
+        self.minwords = self.settings.get_min_words()
+        self.stopwords_dir = self.settings.get_stopwords_dir()
+        self.dpi = self.settings.get_dpi()
+        self.width = self.settings.get_width()
+        self.height = self.settings.get_height()
+        self.wordcloud_mask = self.settings.get_wordcloud_mask()
+        self.temp_dir = self.settings.get_temp_dir()
+        self.temp_file = self.settings.get_temp_file()
+        self.mentions_file = self.settings.get_mentions_file()
 
         self.twitter_api = twitter_api
         self.url_shortener = url_shortener
@@ -135,6 +136,9 @@ class AtmosSciBot(object):
         contains_j_name = False
         j_short_name = None
         url = None
+        contains_request = ('make' in mention.text.lower()
+                            and 'word' in mention.text.lower()
+                            and 'cloud' in mention.text.lower())
         contains_magic_word = 'please' in mention.text.lower()
         hashtags = [i['text'] for i in mention.entities['hashtags']]
         if len(hashtags) == 1:
@@ -146,12 +150,13 @@ class AtmosSciBot(object):
         contains_url = len(mention.entities['urls']) == 1
         if contains_url:
             url = mention.entities['urls'][0]['expanded_url']
-        is_correct = (contains_magic_word
+        is_correct = (contains_request
+                      and contains_magic_word
                       and contains_j_name
                       and contains_url)
         return is_correct, url, j_short_name
 
-    def make_reply(user_name, url, err_msg=None):
+    def make_reply(self, user_name, url, err_msg=None):
         if err_msg is None:
             reply = '@{}, here\'s a word cloud for this article {}'
             reply = reply.format(user_name, url)
@@ -202,6 +207,7 @@ class AtmosSciBot(object):
             kw = dict(imgname=None,
                       in_reply_to_status_id=mention.id_str)
             is_correct, url, j_short_name = self.parse_request(mention)
+            short_url = None
             if is_correct:
                 # URL must be correct and directly lead to
                 # webpage with text to be parsed (unlike the ones in RSS feeds)
@@ -216,17 +222,15 @@ class AtmosSciBot(object):
                     else:
                         # TODO: specify the problem
                         err_msg = 'Check the URL'
-                        reply = self.make_reply(user_name, short_url,
-                                                err_msg=err_msg)
+                        reply = self.make_reply(user_name, short_url, err_msg)
                 else:
                     err_msg = 'There is not enough text'
-                    reply = self.make_reply(user_name, short_url,
-                                            err_msg=err_msg)
-            else:
-                err_msg = 'Your request is not correct'
-                reply = self.make_reply(user_name, short_url,
-                                        err_msg=err_msg)
-            self.twitter_api.post_tweet(reply, short_url, **kw)
+                    reply = self.make_reply(user_name, short_url, err_msg)
+            # else:
+            # TODO: reply or not that is the question
+            #     err_msg = 'Your request is not correct'
+            #     reply = self.make_reply(user_name, short_url, err_msg)
+                self.twitter_api.post_tweet(reply, short_url, **kw)
 
     def run(self):
         with open(self.j_list_path) as json_file:
