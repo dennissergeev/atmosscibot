@@ -102,7 +102,7 @@ def extract_text(url, journal, url_ready=False):
         parser = 'lxml-html'
         find_args = dict(attrs={'class': 'Para'})
 
-    elif journal.upper() in ['ASL', 'JAMES', 'JGRA']:
+    elif journal.upper() in ['ASL', 'JAMES', 'JGRA', 'QJRMS', 'GRL']:
         # Wiley journals
         new_path = '{}{}/full'.format(parsed_link.path.replace('/resolve', ''),
                                       parsed_link.query.
@@ -117,9 +117,11 @@ def extract_text(url, journal, url_ready=False):
         find_args = dict(name='section',
                          attrs={'class':
                                 'article-section article-body-section'})
-        if journal.upper() in ['JGRA']:
-            _class_attr = "article-type article-type--open-access"
-            check_for_open_access = dict(name='span',
+        if journal.upper() in ['JGRA', 'QJRMS', 'GRL']:
+            # parse only the articles that are open-access
+            # under the Creative Commons license
+            _class_attr = "article-type article-type--cc"
+            check_for_open_access = dict(name='a',
                                          attrs={'class': _class_attr})
 
     elif journal.upper() in ['TA', 'TB']:

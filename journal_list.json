@@ -50,6 +50,16 @@
         "rss": "http://onlinelibrary.wiley.com/rss/journal/10.1002/(ISSN)1942-2466"
     },
     {
+        "name": "Quarterly Journal of the Royal Meteorological Society",
+        "short_name": "QJRMS",
+        "rss": "http://onlinelibrary.wiley.com/rss/journal/10.1002/(ISSN)1477-870X"
+    },
+    {
+        "name": "Geophysical Research Letters",
+        "short_name": "GRL",
+        "rss": "http://onlinelibrary.wiley.com/rss/journal/10.1002/(ISSN)1944-8007"
+    },
+    {
         "name": "Journal of Geophysical Research: Atmospheres",
         "short_name": "JGRA",
         "rss": "http://onlinelibrary.wiley.com/rss/journal/10.1002/(ISSN)2169-8996"

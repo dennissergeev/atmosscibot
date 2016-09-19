@@ -1,4 +1,5 @@
 settings.ini
+mentions.json
 *.pyc
 .ipynb_checkpoints
 *.log
