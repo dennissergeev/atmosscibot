@@ -72,24 +72,37 @@ def extract_text(url, journal, url_ready=False):
 
     if journal.upper() in ['ACP', 'AMT']:
         # EGU journals
+        if journal.upper() == 'ACP':
+            # TODO: make this automatic
+            netloc = 'www.atmos-chem-phys{}.net'
+        elif journal.upper() == 'AMT':
+            netloc = 'www.atmos-meas-tech{}.net'
         link_path = parsed_link.path
         path_split = [s for s in link_path.split('/') if s]
         if 'discuss' in url:
             # links like
             # http://www.atmos-chem-phys-discuss.net/acp-2016-95/acp-2016-95.xml
-            new_path = '{l}/{l}.xml'.format(l=link_path)
+            netloc = netloc.format('-discuss')
+            # new_path = '{l}/{l}.xml'.format(l=link_path)
+            new_url = '{n}/{l}/{l}.xml'.format(n=netloc, l=path_split[1])
             find_args = dict(name='abstract')
         else:
+            netloc = netloc.format('')
             # links like
             # http://www.atmos-chem-phys.net/16/2309/2016/acp-16-2309-2016.xml
-            new_path = '{}{}.xml'.format(link_path,
-                                         '-'.join([journal.lower()] +
-                                                  path_split))
+            # new_path = '{}{}.xml'.format(link_path,
+            #                              '-'.join([journal.lower()] +
+            #                                       path_split))
+            _sub_path = '/'.join(path_split[1].split('-')[1:])
+            new_url = '{}/{}/{}.xml'.format(netloc,
+                                            _sub_path,
+                                            path_split[1])
             find_args = dict(name='body')
         if url_ready:
             doc_url = parsed_link.geturl()
         else:
-            doc_url = parsed_link._replace(path=new_path).geturl()
+            # doc_url = parsed_link._replace(path=new_path).geturl()
+            doc_url = new_url
         parser = 'lxml-xml'
 
     elif journal.upper() in ['BML', 'AAS', 'MAP', 'JAC', 'TAC', 'CC', 'APJAS']:
