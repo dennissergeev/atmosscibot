@@ -22,7 +22,7 @@ def text_from_soup(url, parser, find_args,
         soup = bs4.BeautifulSoup(doc, parser)
         if check_for_open_access is not None:
             oa_check = soup.find_all(**check_for_open_access)
-            if len(oa_check) > 0:
+            if len(oa_check) == 0:
                 result = soup.find_all(**find_args)
             else:
                 return ''
@@ -131,10 +131,17 @@ def extract_text(url, journal, url_ready=False):
                          attrs={'class':
                                 'article-section article-body-section'})
         if journal.upper() in ['JGRA', 'QJRMS', 'GRL']:
-            # parse only the articles that are open-access
-            # under the Creative Commons license
-            _class_attr = "article-type article-type--cc"
-            check_for_open_access = dict(name='a',
+            # # parse only the articles that are open-access
+            # # under the Creative Commons license
+            # _class_attr = "article-type article-type--cc"
+            # check_for_open_access = dict(name='a',
+            #                              attrs={'class': _class_attr})
+            # New: check for non-open-access,
+            # because older open-access papers do not have CC license
+            # Check if there is a button "Get access"
+            # NOTE: text_from_soup() is changed accordingly
+            _class_attr = 'icon icon__get-access'
+            check_for_open_access = dict(name='span',
                                          attrs={'class': _class_attr})
 
     elif journal.upper() in ['TA', 'TB']:
