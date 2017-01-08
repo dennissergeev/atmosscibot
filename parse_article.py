@@ -74,9 +74,9 @@ def extract_text(url, journal, url_ready=False):
         # EGU journals
         if journal.upper() == 'ACP':
             # TODO: make this automatic
-            netloc = 'www.atmos-chem-phys{}.net'
+            netloc = 'http://www.atmos-chem-phys{}.net'
         elif journal.upper() == 'AMT':
-            netloc = 'www.atmos-meas-tech{}.net'
+            netloc = 'http://www.atmos-meas-tech{}.net'
         link_path = parsed_link.path
         path_split = [s for s in link_path.split('/') if s]
         if 'discuss' in url:
@@ -105,7 +105,7 @@ def extract_text(url, journal, url_ready=False):
             doc_url = new_url
         parser = 'lxml-xml'
 
-    elif journal.upper() in ['BML', 'AAS', 'MAP', 'JAC', 'TAC', 'CC', 'APJAS']:
+    elif journal.upper() in ['BLM', 'AAS', 'MAP', 'JAC', 'TAC', 'CC', 'APJAS']:
         # Springer journals
         new_path = 'article{}/fulltext.html'.format(parsed_link.path)
         if url_ready:
