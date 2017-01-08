@@ -261,7 +261,7 @@ class AtmosSciBot(object):
                             self.twitter_api.post_tweet(ttl, short_url,
                                                         imgname)
                             self.write_entry(url, j_short_name)
-                            time.sleep(10)
+                            # time.sleep(10)
                         else:
                             _warn = '({jshort}) Wordcloud generation ERR: {e}'
                             _msg = _warn.format(jshort=j_short_name,

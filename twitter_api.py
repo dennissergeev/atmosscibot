@@ -14,7 +14,7 @@ class TwitterApi(object):
         # Initialise twitter api
         self.twitter_api = tweepy.API(auth)
         # In case of error, try again one more time after n seconds
-        self.wait_seconds = 120
+        self.wait_seconds = 60
 
     def assemble_tweet_text(self, tweet_text, short_url, text_len=85):
         """Assemble tweet status"""

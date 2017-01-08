@@ -1,0 +1,16 @@
+name: atmosscibot 
+channels:
+   - default
+dependencies:
+   - python=3.4
+   - lxml
+   - numpy
+   - pillow
+pip:
+   - beautifulsoup4
+   - feedparser
+   - requests
+   - tinydb
+   - tweepy
+   - wordcloud
+   - git+https://github.com/bitly/bitly-api-python

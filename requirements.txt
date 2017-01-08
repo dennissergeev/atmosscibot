@@ -1,8 +1,9 @@
-python=3
 beautifulsoup4
 bitly_api
 feedparser
 lxml
+numpy
+pillow
 requests
 tinydb
 tweepy
