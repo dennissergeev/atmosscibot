@@ -1,16 +1,16 @@
 name: atmosscibot 
 channels:
-   - conda-forge 
+   - defaults
 dependencies:
-   - python=3.5
-   - beautifulsoup4
-   - feedparser
+   - python=3.4
    - lxml
    - numpy
    - pillow
-   - requests
-   - tinydb
-   - wordcloud
    - pip:
+       - beautifulsoup4
+       - feedparser
+       - requests
+       - tinydb
        - tweepy
+       - wordcloud
        - git+https://github.com/bitly/bitly-api-python
