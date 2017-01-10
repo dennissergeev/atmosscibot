@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Bot that creates word clouds from scientific articles and posts them to Twitter
@@ -10,7 +11,6 @@ import logging
 import numpy as np
 import os
 from PIL import Image
-import time
 from tinydb import TinyDB, where
 from wordcloud import WordCloud, STOPWORDS
 
@@ -140,8 +140,8 @@ class AtmosSciBot(object):
         return reply
 
     def check_new_mention(self, mention):
-        query_result = self.mentions_db.search(where('id_str') == mention.id_str)
-        new_mention = False if len(query_result) > 0 else True
+        query_res = self.mentions_db.search(where('id_str') == mention.id_str)
+        new_mention = False if len(query_res) > 0 else True
         return new_mention
 
     def save_mention(self, mention):
