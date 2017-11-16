@@ -22,12 +22,12 @@
     {
         "name": "Tellus A",
         "short_name": "TA",
-        "rss": "http://www.tellusa.net/index.php/tellusa/gateway/plugin/WebFeedGatewayPlugin/rss2"
+        "rss": "http://www.tandfonline.com/action/showFeed?type=etoc&feed=rss&jc=zela20"
     },
     {
         "name": "Tellus B",
         "short_name": "TB",
-        "rss": "http://www.tellusb.net/index.php/tellusb/gateway/plugin/WebFeedGatewayPlugin/rss2"
+        "rss": "http://www.tandfonline.com/action/showFeed?type=etoc&feed=rss&jc=zelb20"
     },
     {
         "name": "Atmospheric Chemistry and Physics",

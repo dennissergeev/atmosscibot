@@ -53,7 +53,7 @@ def text_from_soup(url, parser, find_args,
                     text += child.text
                 except AttributeError:
                     text += child.strip()
-                except:
+                except Exception:
                     pass
             return text
     else:
@@ -146,10 +146,19 @@ def extract_text(url, journal, url_ready=False):
 
     elif journal.upper() in ['TA', 'TB']:
         # Tellus A/B
+        # Now one of Taylor&Francis journals
         doc_url = parsed_link.geturl()
         parser = 'lxml-html'
-        find_args = dict(name='div', attrs={'id': 'articleHTML'})
-        between_tags = [None, dict(name='h1', text='References')]
+        # find_args = dict(name='div', attrs={'id': 'articleHTML'})
+        # between_tags = [None, dict(name='h1', text='References')]
+        find_args = dict(name='p',
+                         attrs={'xmlns:mml':
+                                'http://www.w3.org/1998/Math/MathML',
+                                'xmlns:xsi':
+                                'http://www.w3.org/2001/XMLSchema-instance',
+                                'xmlns:oasis':
+                                'http://docs.oasis-open.org/ns/oasis-exchange/table'  # NOQA
+                                })
 
     elif journal.upper() in ['AM', 'IJAS', 'JCLI']:
         # Hindawi journals (by HTML)
