@@ -159,6 +159,8 @@ def extract_text(url, journal, url_ready=False):
                                 'xmlns:oasis':
                                 'http://docs.oasis-open.org/ns/oasis-exchange/table'  # NOQA
                                 })
+        escape_result = dict(name='span',
+                             attrs={'class': 'ref-overlay scrollable-ref'})
 
     elif journal.upper() in ['AM', 'IJAS', 'JCLI']:
         # Hindawi journals (by HTML)
