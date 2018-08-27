@@ -130,7 +130,7 @@ def extract_text(url, journal, url_ready=False):
         #                        'article-section article-body-section'})
         # Wiley's website seems to have changed HTML tags, so now the text is
         # within div tags of class "article-section__content"
-        find_args = dict(name='section',
+        find_args = dict(name='div',
                          attrs={'class':
                                 'article-section__content'})
         if journal.upper() in ['JGRA', 'QJRMS', 'GRL']:
