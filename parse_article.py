@@ -117,9 +117,7 @@ def extract_text(url, journal, url_ready=False):
 
     elif journal.upper() in ['ASL', 'JAMES', 'JGRA', 'QJRMS', 'GRL']:
         # Wiley journals
-        new_path = '{}{}/full'.format(parsed_link.path.replace('/resolve', ''),
-                                      parsed_link.query.
-                                      replace('%2F', '/').replace('DOI=', '/'))
+        new_path = parsed_link.path.replace('/abs', '/full')
         if url_ready:
             doc_url = parsed_link.geturl()
         else:
@@ -127,9 +125,14 @@ def extract_text(url, journal, url_ready=False):
         parser = 'lxml-html'
         # find_args = dict(attrs={'class': 'para'})
         # This is probably better (although excludes abstract):
+        # find_args = dict(name='section',
+        #                 attrs={'class':
+        #                        'article-section article-body-section'})
+        # Wiley's website seems to have changed HTML tags, so now the text is
+        # within div tags of class "article-section__content"
         find_args = dict(name='section',
                          attrs={'class':
-                                'article-section article-body-section'})
+                                'article-section__content'})
         if journal.upper() in ['JGRA', 'QJRMS', 'GRL']:
             # # parse only the articles that are open-access
             # # under the Creative Commons license
@@ -138,11 +141,11 @@ def extract_text(url, journal, url_ready=False):
             #                              attrs={'class': _class_attr})
             # New: check for non-open-access,
             # because older open-access papers do not have CC license
-            # Check if there is a button "Get access"
+            # Check if there is a button to get access
             # NOTE: text_from_soup() is changed accordingly
-            _class_attr = 'icon icon__get-access'
-            check_for_open_access = dict(name='span',
-                                         attrs={'class': _class_attr})
+            _class_attr = dict(title='Log in to get access')
+            check_for_open_access = dict(name='a',
+                                         attrs=_class_attr)
 
     elif journal.upper() in ['TA', 'TB']:
         # Tellus A/B
