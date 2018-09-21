@@ -98,5 +98,10 @@
         "name": "Climatic Change",
         "short_name": "CC",
         "rss": "http://link.springer.com/search.rss?facet-journal-id=10584&package=openaccessarticles&search-within=Journal&query="
+    },
+    {
+        "name": "Atmosphere",
+        "short_name": "ATMOS",
+        "rss": "http://www.mdpi.com/rss/journal/atmosphere"
     }
 ]

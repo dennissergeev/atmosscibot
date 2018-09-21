@@ -186,6 +186,15 @@ def extract_text(url, journal, url_ready=False):
                                 'xmlns:xsi':
                                 'http://www.w3.org/2001/XMLSchema-instance'})
 
+    elif journal.upper() == 'ATMOS':
+        # MDPI Atmosphere
+        if parsed_link.geturl().endswith('/htm'):
+            doc_url = parsed_link.geturl()
+        else:
+            doc_url = parsed_link.geturl() + '/htm'
+        parser = 'lxml-html'
+        find_args = dict(name='div', attrs={'class': 'html-body'})
+
     else:
         warnings.warn('Skip {0} journal: no rule for it'.format(journal))
         doc_url = None
