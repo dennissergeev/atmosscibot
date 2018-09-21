@@ -84,7 +84,7 @@ def extract_text(url, journal, url_ready=False):
             # http://www.atmos-chem-phys-discuss.net/acp-2016-95/acp-2016-95.xml
             netloc = netloc.format('-discuss')
             # new_path = '{l}/{l}.xml'.format(l=link_path)
-            new_url = '{n}/{l}/{l}.xml'.format(n=netloc, l=path_split[1])
+            new_url = '{n}/{ll}/{ll}.xml'.format(n=netloc, ll=path_split[1])
             find_args = dict(name='abstract')
         else:
             netloc = netloc.format('')

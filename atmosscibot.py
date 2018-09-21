@@ -37,6 +37,7 @@ class AtmosSciBot(object):
         self.width = self.settings.get_width()
         self.height = self.settings.get_height()
         self.wordcloud_mask = self.settings.get_wordcloud_mask()
+        self.font_path = self.settings.get_font_path()
         self.temp_dir = self.settings.get_temp_dir()
         self.temp_file = self.settings.get_temp_file()
         self.mentions_file = self.settings.get_mentions_file()
@@ -95,6 +96,7 @@ class AtmosSciBot(object):
             # Font-Awesome (http://minimaxir.com/2016/05/wordclouds/)
 
             wc = WordCloud(width=self.width, height=self.height,
+                           font_path=self.font_path, colormap=self.cmap,
                            stopwords=self.exclude_words,
                            background_color=background_color, mode='RGBA',
                            mask=arr).generate(self.text)
@@ -193,6 +195,9 @@ class AtmosSciBot(object):
                 kw = dict(imgname=None,
                           in_reply_to_status_id=mention.id_str)
                 is_correct, url, j_short_name = self.parse_request(mention)
+                self.cmap = [i['cmap']
+                             for i in self.j_list
+                             if i['short_name'] == j_short_name][0]
                 short_url = None
                 if is_correct:
                     # URL must be correct and directly lead to
@@ -231,6 +236,7 @@ class AtmosSciBot(object):
         for journ in self.j_list:
             f = fp.parse(journ['rss'])
             j_short_name = journ['short_name']
+            self.cmap = journ['cmap']
             _msg = '({jshort}) Parsed RSS of {jname}'
             self.logger.info(_msg.format(jname=journ['name'],
                                          jshort=j_short_name))

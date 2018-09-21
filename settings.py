@@ -39,6 +39,9 @@ class Settings(object):
     def get_wordcloud_mask(self):
         return self.config[self.CONFIGS]['wordcloud_mask']
 
+    def get_font_path(self):
+        return self.config[self.CONFIGS].get('font_path')
+
     def get_width(self):
         return int(self.config[self.CONFIGS]['width'])
 

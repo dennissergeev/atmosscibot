@@ -2,106 +2,115 @@
     {
         "name": "Bulletin of the American Meteorological Society",
         "short_name": "BAMS",
+        "cmap": "copper",
         "rss": "http://journals.ametsoc.org/action/showFeed?type=etoc&feed=rss&jc=bams"
     },
     {
         "name": "Advances in Meteorology",
         "short_name": "AM",
+        "cmap": "winter",
         "rss": "http://www.hindawi.com/journals/amete/rss.xml"
-    },
-    {
-        "name": "Journal of Climatology",
-        "short_name": "JCLI",
-        "rss": "http://www.hindawi.com/journals/jcli/rss.xml"
-    },
-    {
-        "name": "International Journal of Atmospheric Sciences",
-        "short_name": "IJAS",
-        "rss": "http://www.hindawi.com/journals/ijas/rss.xml"
     },
     {
         "name": "Tellus A",
         "short_name": "TA",
+        "cmap": "PuOr",
         "rss": "http://www.tandfonline.com/action/showFeed?type=etoc&feed=rss&jc=zela20"
     },
     {
         "name": "Tellus B",
         "short_name": "TB",
+        "cmap": "BrBG",
         "rss": "http://www.tandfonline.com/action/showFeed?type=etoc&feed=rss&jc=zelb20"
     },
     {
         "name": "Atmospheric Chemistry and Physics",
         "short_name": "ACP",
+        "cmap": "Blues",
         "rss": "http://www.atmos-chem-phys.net/xml/rss2_0.xml"
     },
     {
         "name": "Atmospheric Measurement Techniques",
         "short_name": "AMT",
+        "cmap": "cool",
         "rss": "http://www.atmos-meas-tech.net/xml/rss2_0.xml"
     },
     {
         "name": "Atmospheric Science Letters",
         "short_name": "ASL",
+        "cmap": "gist_earth",
         "rss": "http://onlinelibrary.wiley.com/rss/journal/10.1002/(ISSN)1530-261X"
     },
     {
         "name": "Journal of Advances in Modeling Earth Systems",
         "short_name": "JAMES",
+        "cmap": "ocean",
         "rss": "http://onlinelibrary.wiley.com/rss/journal/10.1002/(ISSN)1942-2466"
     },
     {
         "name": "Quarterly Journal of the Royal Meteorological Society",
         "short_name": "QJRMS",
+        "cmap": "gnuplot",
         "rss": "http://onlinelibrary.wiley.com/rss/journal/10.1002/(ISSN)1477-870X"
     },
     {
         "name": "Geophysical Research Letters",
         "short_name": "GRL",
+        "cmap": "Dark2",
         "rss": "http://onlinelibrary.wiley.com/rss/journal/10.1002/(ISSN)1944-8007"
     },
     {
         "name": "Journal of Geophysical Research: Atmospheres",
         "short_name": "JGRA",
+        "cmap": "plasma",
         "rss": "http://onlinelibrary.wiley.com/rss/journal/10.1002/(ISSN)2169-8996"
     },
     {
         "name": "Boundary-Layer Meteorology",
         "short_name": "BLM",
+        "cmap": "magma",
         "rss": "http://link.springer.com/search.rss?facet-journal-id=10546&package=openaccessarticles&search-within=Journal&query="
     },
     {
         "name": "Advances in Atmospheric Sciences",
         "short_name": "AAS",
+        "cmap": "autumn",
         "rss": "http://link.springer.com/search.rss?facet-journal-id=376&package=openaccessarticles&search-within=Journal&query="
     },
     {
         "name": "Meteorology and Atmospheric Physics",
         "short_name": "MAP",
+        "cmap": "brg",
         "rss": "http://link.springer.com/search.rss?facet-journal-id=703&package=openaccessarticles&search-within=Journal&query="
     },
     {
         "name": "Journal of Atmospheric Chemistry",
         "short_name": "JAC",
+        "cmap": "inferno",
         "rss": "http://link.springer.com/search.rss?facet-journal-id=10874&package=openaccessarticles&search-within=Journal&query="
     },
     {
         "name": "Theoretical and Applied Climatology",
         "short_name": "TAC",
+        "cmap": "gist_stern",
         "rss": "http://link.springer.com/search.rss?facet-journal-id=704&package=openaccessarticles&search-within=Journal&query="
     },
     {
         "name": "Asia-Pacific Journal of Atmospheric Sciences",
         "short_name": "APJAS",
+        "cmap": "bone",
         "rss": "http://link.springer.com/search.rss?facet-journal-id=13143&package=openaccessarticles&search-within=Journal&query="
     },
     {
         "name": "Climatic Change",
         "short_name": "CC",
+        "cmap": "gnuplot2",
         "rss": "http://link.springer.com/search.rss?facet-journal-id=10584&package=openaccessarticles&search-within=Journal&query="
     },
     {
         "name": "Atmosphere",
         "short_name": "ATMOS",
+        "cmap": "cubehelix",
         "rss": "http://www.mdpi.com/rss/journal/atmosphere"
     }
 ]
