@@ -26,7 +26,7 @@
     {
         "name": "Atmospheric Chemistry and Physics",
         "short_name": "ACP",
-        "cmap": "Blues",
+        "cmap": "tab20",
         "rss": "http://www.atmos-chem-phys.net/xml/rss2_0.xml"
     },
     {
