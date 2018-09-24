@@ -11,6 +11,7 @@ import logging
 import numpy as np
 import os
 from PIL import Image
+import re
 from tinydb import TinyDB, where
 from wordcloud import WordCloud, STOPWORDS
 
@@ -63,6 +64,9 @@ class AtmosSciBot(object):
             journal_name = journal+'D'
         else:
             journal_name = journal
+        if journal.upper() == 'ATMOS':
+            title = re.sub(r'Atmosphere, Vol. [0-9]+, Pages [0-9]+: ',
+                           '', title)
         return '{}: {}'.format(journal_name, title)
 
     def make_img_file(self):

@@ -110,7 +110,7 @@
     {
         "name": "Atmosphere",
         "short_name": "ATMOS",
-        "cmap": "cubehelix",
+        "cmap": "cividis",
         "rss": "http://www.mdpi.com/rss/journal/atmosphere"
     }
 ]
