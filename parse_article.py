@@ -62,7 +62,7 @@ def text_from_soup(url, parser, find_args,
         return ''
 
 
-def extract_text(url, journal, url_ready=False):
+def extract_text(url, journal, url_ready=False, isdiscuss=False):
     """Download XML/HTML doc and parse it"""
     parsed_link = urllib.parse.urlparse(url)
 
@@ -70,18 +70,20 @@ def extract_text(url, journal, url_ready=False):
     escape_result = None
     check_for_open_access = None
 
-    if journal.upper() in ['ACP', 'AMT']:
+    if journal.upper() in ['ACP', 'AMT', 'GMD']:
         # EGU journals
         if journal.upper() == 'ACP':
             # TODO: make this automatic
             netloc = 'http://www.atmos-chem-phys{}.net'
         elif journal.upper() == 'AMT':
             netloc = 'http://www.atmos-meas-tech{}.net'
+        elif journal.upper() == 'GMD':
+            netloc = 'http://www.geosci-model-dev{}.net'
         link_path = parsed_link.path
         path_split = [s for s in link_path.split('/') if s]
-        if 'discuss' in url:
+        if isdiscuss:
             # links like
-            # http://www.atmos-chem-phys-discuss.net/acp-2016-95/acp-2016-95.xml
+            # atmos-chem-phys-discuss.net/acp-2016-95/acp-2016-95.xml
             netloc = netloc.format('-discuss')
             # new_path = '{l}/{l}.xml'.format(l=link_path)
             new_url = '{n}/{ll}/{ll}.xml'.format(n=netloc, ll=path_split[1])

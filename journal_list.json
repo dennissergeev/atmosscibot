@@ -36,6 +36,12 @@
         "rss": "http://www.atmos-meas-tech.net/xml/rss2_0.xml"
     },
     {
+        "name": "Geoscientific Model Development",
+        "short_name": "GMD",
+        "cmap": "autumn",
+        "rss": "https://www.geosci-model-dev.net/xml/rss2_0.xml"
+    },
+    {
         "name": "Atmospheric Science Letters",
         "short_name": "ASL",
         "cmap": "gist_earth",
@@ -44,7 +50,7 @@
     {
         "name": "Journal of Advances in Modeling Earth Systems",
         "short_name": "JAMES",
-        "cmap": "ocean",
+        "cmap": "viridis",
         "rss": "http://onlinelibrary.wiley.com/rss/journal/10.1002/(ISSN)1942-2466"
     },
     {
@@ -74,7 +80,7 @@
     {
         "name": "Advances in Atmospheric Sciences",
         "short_name": "AAS",
-        "cmap": "autumn",
+        "cmap": "CMRmap",
         "rss": "http://link.springer.com/search.rss?facet-journal-id=376&package=openaccessarticles&search-within=Journal&query="
     },
     {

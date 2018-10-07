@@ -58,8 +58,8 @@ class AtmosSciBot(object):
                          datetime=tstamp)
         self.DB.insert(new_entry)
 
-    def make_title(self, url, journal, title):
-        if 'discuss' in url:
+    def make_title(self, url, journal, title, isdiscuss=False):
+        if isdiscuss:
             # EGU discussion journals
             journal_name = journal+'D'
         else:
@@ -207,7 +207,9 @@ class AtmosSciBot(object):
                     # URL must be correct and directly lead to
                     # webpage with text to be parsed
                     # (unlike the ones in RSS feeds)
-                    self.text = extract_text(url, j_short_name, url_ready=True)
+                    self.text = extract_text(url, j_short_name,
+                                             url_ready=True,
+                                             isdiscuss=False)
                     if len(self.text) > self.minwords:
                         self.generate_wc()
                         if self.error_in_wordcloud_gen is None:
@@ -252,6 +254,14 @@ class AtmosSciBot(object):
                     # TODO: needs improvement...
                     if entry.author == '':
                         new_entry = False
+                # if j_short_name in ['ACP', 'AMT', 'GMD']:
+                try:
+                    isdiscuss = entry.isdiscussion == 'yes'
+                except AttributeError:
+                    isdiscuss = False
+
+                # if isdiscuss:
+                #     new_entry = False
 
                 new_entry = self.check_new_entry(url)
 
@@ -259,14 +269,17 @@ class AtmosSciBot(object):
                     _msg = '({jshort}) New entry in: {url}'
                     self.logger.info(_msg.format(jshort=j_short_name,
                                                  url=url))
-                    self.text = extract_text(url, j_short_name)
+                    self.text = extract_text(url, j_short_name,
+                                             url_ready=False,
+                                             isdiscuss=isdiscuss)
 
                     if len(self.text) > self.minwords:
                         self.generate_wc()
                         if self.error_in_wordcloud_gen is None:
                             imgname = self.img_file
                             ttl = self.make_title(url, j_short_name,
-                                                  entry.title)
+                                                  entry.title,
+                                                  isdiscuss=isdiscuss)
                             short_url = self.url_shortener.shorten(url)
                             self.twitter_api.post_tweet(ttl, short_url,
                                                         imgname)
