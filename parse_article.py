@@ -11,7 +11,32 @@ import warnings
 def text_from_soup(url, parser, find_args,
                    check_for_open_access=None,
                    between_children=None, escape_result=None):
+    """
+    Extract text from html or xml page using beautifulsoup
+    
+    Arguments
+    ---------
+    url: str
+        URL pointing to the page
+    parser: str
+        HTML/XML parser, used by beautifulsoup
+    find_args: dict
+        Dictionary specifying tag names and attributes
+        from which the text is extracted
+    check_for_open_access: dict, optional
+        Check if the page contains elements that mean
+        open access
+    between_children: list, optional
+        List of dictionaries that describe tags between
+        which the main text is
+    escape_result: dict, optional
+        Omit these elements
 
+    Returns
+    -------
+    text: str
+        Extracted text joined by whitespace
+    """
     req = requests.get(url)
 
     if req.status_code == 200:
@@ -31,15 +56,30 @@ def text_from_soup(url, parser, find_args,
 
         if escape_result is not None:
             assert isinstance(escape_result, dict)
-            to_remove = []
-            for tag in result:
-                found = tag.find_all(**escape_result)
-                if len(found) != 0:
-                    to_remove.append(tag)
-            [result.remove(i) for i in to_remove]
+            if len(result) == 1:
+                # if result consists of only 1 element,
+                # loop over its children and append tags to
+                # a new list, escaping tags specified by
+                # escape_result dictionary
+                _res = result[0]
+                result = []
+                for tag in _res:
+                    if isinstance(tag, bs4.element.Tag):
+                        if not (escape_result['name'] == tag.name
+                                and escape_result['attrs'] == tag.attrs):
+                            result.append(tag)
+            else:
+                # Loop over tags in the list `result` and remove
+                # tags specified by escape_result dictionary
+                to_remove = []
+                for tag in result:
+                    found = tag.find_all(**escape_result)
+                    if len(found) != 0:
+                        to_remove.append(tag)
+                [result.remove(i) for i in to_remove]
 
         if between_children is None:
-            return ''.join([i.text for i in result])
+            return ' '.join([i.text for i in result])
         else:
             assert len(between_children) == 2
             for i, child_descr in enumerate(between_children):
@@ -196,6 +236,18 @@ def extract_text(url, journal, url_ready=False, isdiscuss=False):
             doc_url = parsed_link.geturl() + '/htm'
         parser = 'lxml-html'
         find_args = dict(name='div', attrs={'class': 'html-body'})
+
+    elif journal.upper() == 'FRONT':
+        # Frontiers in Earth Science | Atmospheric Science section
+        if parsed_link.geturl().endswith('/full'):
+            doc_url = parsed_link.geturl()
+        else:
+            doc_url = parsed_link.geturl() + '/full'
+        parser = 'lxml-html'
+        find_args = dict(name='div',
+                         attrs={'class': 'JournalFullText'})
+        escape_result = dict(name='div',
+                             attrs={'class': ['References']})
 
     else:
         warnings.warn('Skip {0} journal: no rule for it'.format(journal))

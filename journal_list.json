@@ -118,5 +118,11 @@
         "short_name": "ATMOS",
         "cmap": "cividis",
         "rss": "http://www.mdpi.com/rss/journal/atmosphere"
+    },
+    {
+        "name": "Frontiers",
+        "short_name": "FRONT",
+        "cmap": "Set2",
+        "rss": "https://www.frontiersin.org/journals/earth-science/sections/atmospheric-science/rss"
     }
 ]
