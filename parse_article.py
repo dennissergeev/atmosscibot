@@ -13,7 +13,7 @@ def text_from_soup(url, parser, find_args,
                    between_children=None, escape_result=None):
     """
     Extract text from html or xml page using beautifulsoup
-    
+
     Arguments
     ---------
     url: str
@@ -216,17 +216,23 @@ def extract_text(url, journal, url_ready=False, isdiscuss=False):
 
     elif journal.upper() in ['BAMS']:
         # American Meteorological Society journals
-        new_path = parsed_link.path.replace('abs', 'full')
+        new_path = parsed_link.path.replace('/abs', '/full')
         if url_ready:
             doc_url = parsed_link.geturl()
         else:
             doc_url = parsed_link._replace(path=new_path, query='').geturl()
+        # print(doc_url)
         parser = 'lxml-html'
         find_args = dict(name='p',
                          attrs={'xmlns:mml':
                                 'http://www.w3.org/1998/Math/MathML',
                                 'xmlns:xsi':
-                                'http://www.w3.org/2001/XMLSchema-instance'})
+                                'http://www.w3.org/2001/XMLSchema-instance',
+                                'xmlns:ali':
+                                'http://www.niso.org/schemas/ali/1.0/',
+                                'xmlns:oasis':
+                                'http://www.niso.org/standards/z39-96/ns/oasis-exchange/table'  # NOQA
+                               })
 
     elif journal.upper() == 'ATMOS':
         # MDPI Atmosphere
