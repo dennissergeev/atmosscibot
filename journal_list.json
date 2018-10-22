@@ -1,27 +1,9 @@
 [
     {
-        "name": "Bulletin of the American Meteorological Society",
-        "short_name": "BAMS",
-        "cmap": "copper",
-        "rss": "http://journals.ametsoc.org/action/showFeed?type=etoc&feed=rss&jc=bams"
-    },
-    {
         "name": "Advances in Meteorology",
         "short_name": "AM",
         "cmap": "winter",
         "rss": "http://www.hindawi.com/journals/amete/rss.xml"
-    },
-    {
-        "name": "Tellus A",
-        "short_name": "TA",
-        "cmap": "PuOr",
-        "rss": "http://www.tandfonline.com/action/showFeed?type=etoc&feed=rss&jc=zela20"
-    },
-    {
-        "name": "Tellus B",
-        "short_name": "TB",
-        "cmap": "BrBG",
-        "rss": "http://www.tandfonline.com/action/showFeed?type=etoc&feed=rss&jc=zelb20"
     },
     {
         "name": "Atmospheric Chemistry and Physics",
