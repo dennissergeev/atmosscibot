@@ -66,7 +66,7 @@ def text_from_soup(url, parser, find_args,
                 for tag in _res:
                     if isinstance(tag, bs4.element.Tag):
                         if not (escape_result['name'] == tag.name
-                                and escape_result['attrs'] == tag.attrs):
+                                and escape_result['attrs']['class'] == tag.attrs['class']):
                             result.append(tag)
             else:
                 # Loop over tags in the list `result` and remove
