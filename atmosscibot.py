@@ -199,11 +199,11 @@ class AtmosSciBot(object):
                 kw = dict(imgname=None,
                           in_reply_to_status_id=mention.id_str)
                 is_correct, url, j_short_name = self.parse_request(mention)
-                self.cmap = [i['cmap']
-                             for i in self.j_list
-                             if i['short_name'] == j_short_name][0]
                 short_url = None
                 if is_correct:
+                    self.cmap = [i['cmap']
+                                 for i in self.j_list
+                                 if i['short_name'] == j_short_name][0]
                     # URL must be correct and directly lead to
                     # webpage with text to be parsed
                     # (unlike the ones in RSS feeds)
