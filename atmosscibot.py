@@ -225,7 +225,7 @@ class AtmosSciBot(object):
                           in_reply_to_status_id=mention.id_str)
                 is_correct, url, j_short_name, self.font_name = self.parse_request(mention)
                 short_url = None
-                if is_correct:
+                if is_correct and j_short_name in [i['short_name'] for i in self.j_list]:
                     self.cmap = [i['cmap']
                                  for i in self.j_list
                                  if i['short_name'] == j_short_name][0]
