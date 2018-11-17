@@ -285,8 +285,9 @@ class AtmosSciBot(object):
                 except AttributeError:
                     isdiscuss = False
 
-                # if isdiscuss:
-                #     new_entry = False
+                if isdiscuss:
+                    # Do not process discussion papers in EGU journals
+                    new_entry = False
 
                 new_entry = self.check_new_entry(url)
 
