@@ -15,6 +15,7 @@ import re
 from tinydb import TinyDB, where
 from wordcloud import WordCloud, STOPWORDS
 
+from font_manager import get_font
 from parse_article import extract_text
 from settings import Settings
 from shorten_url_api import UrlShortener
@@ -38,7 +39,8 @@ class AtmosSciBot(object):
         self.width = self.settings.get_width()
         self.height = self.settings.get_height()
         self.wordcloud_mask = self.settings.get_wordcloud_mask()
-        self.font_path = self.settings.get_font_path()
+        self.allow_font_change = self.settings.get_font_switch()
+        self.font_name = None  # use default font
         self.temp_dir = self.settings.get_temp_dir()
         self.temp_file = self.settings.get_temp_file()
         self.mentions_file = self.settings.get_mentions_file()
@@ -99,8 +101,11 @@ class AtmosSciBot(object):
             # Other masks can be extracted from
             # Font-Awesome (http://minimaxir.com/2016/05/wordclouds/)
 
+            # Download font or use the default one
+            font_path = get_font(self.font_name)
+
             wc = WordCloud(width=self.width, height=self.height,
-                           font_path=self.font_path, colormap=self.cmap,
+                           font_path=font_path, colormap=self.cmap,
                            stopwords=self.exclude_words,
                            background_color=background_color, mode='RGBA',
                            mask=arr).generate(self.text)
@@ -109,17 +114,37 @@ class AtmosSciBot(object):
             wc.to_file(self.img_file)
             self.error_in_wordcloud_gen = None
 
+            # Font-related clean-up
+            if self.font_name is not None:
+                # move font files to a separate directory
+                font_dir = os.path.join(curdir, 'googlefonts')
+                if not os.path.isdir(font_dir):
+                    os.mkdir(font_dir)
+                for f in glob('{}_400.*'.format(self.font_name.replace(' ', '_'))):
+                    try:
+                        os.rename(f, os.path.join(font_dir, os.path.basename(f)))
+                    except Exception as e:
+                        _msg = 'ERR when moving {f}: {e}'
+                        logger.warning(_msg.format(f=f, e=e))
+            self.font_name = None  # reset to default
+
         except Exception as e:
             self.error_in_wordcloud_gen = e
 
     def parse_request(self, mention):
+        regex_font = r'\[font\:\s*([\w\s]*)\]'
         contains_j_name = False
         j_short_name = None
         url = None
+        font_name = None
         contains_request = ('make' in mention.text.lower()
                             and 'word' in mention.text.lower()
                             and 'cloud' in mention.text.lower())
         contains_magic_word = 'please' in mention.text.lower()
+        if self.allow_font_change:
+            r = re.search(regex_font, mention.text)
+            if r is not None:
+                font_name = r.group(1)
         hashtags = [i['text'] for i in mention.entities['hashtags']]
         if len(hashtags) == 1:
             j_short_name = hashtags[0].upper()
@@ -134,7 +159,7 @@ class AtmosSciBot(object):
                       and contains_magic_word
                       and contains_j_name
                       and contains_url)
-        return is_correct, url, j_short_name
+        return is_correct, url, j_short_name, font_name
 
     def make_reply(self, user_name, url, err_msg=None):
         if err_msg is None:
@@ -198,7 +223,7 @@ class AtmosSciBot(object):
 
                 kw = dict(imgname=None,
                           in_reply_to_status_id=mention.id_str)
-                is_correct, url, j_short_name = self.parse_request(mention)
+                is_correct, url, j_short_name, self.font_name = self.parse_request(mention)
                 short_url = None
                 if is_correct:
                     self.cmap = [i['cmap']
