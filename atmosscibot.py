@@ -103,6 +103,9 @@ class AtmosSciBot(object):
 
             # Download font or use the default one
             font_path = get_font(self.font_name)
+            if self.allow_font_change:
+                logger.info('Using {} font'.format(font_path))
+            # print(font_path)
 
             wc = WordCloud(width=self.width, height=self.height,
                            font_path=font_path, colormap=self.cmap,
@@ -114,25 +117,14 @@ class AtmosSciBot(object):
             wc.to_file(self.img_file)
             self.error_in_wordcloud_gen = None
 
-            # Font-related clean-up
-            if self.font_name is not None:
-                # move font files to a separate directory
-                font_dir = os.path.join(curdir, 'googlefonts')
-                if not os.path.isdir(font_dir):
-                    os.mkdir(font_dir)
-                for f in glob('{}_400.*'.format(self.font_name.replace(' ', '_'))):
-                    try:
-                        os.rename(f, os.path.join(font_dir, os.path.basename(f)))
-                    except Exception as e:
-                        _msg = 'ERR when moving {f}: {e}'
-                        logger.warning(_msg.format(f=f, e=e))
             self.font_name = None  # reset to default
 
         except Exception as e:
             self.error_in_wordcloud_gen = e
+            # print(e)
 
     def parse_request(self, mention):
-        regex_font = r'\[font\:\s*([\w\s]*)\]'
+        regex_font = r'\[font=\s*([\w\s]*)\]'
         contains_j_name = False
         j_short_name = None
         url = None
@@ -163,10 +155,10 @@ class AtmosSciBot(object):
 
     def make_reply(self, user_name, url, err_msg=None):
         if err_msg is None:
-            reply = '@{}, here\'s a word cloud for this article {}'
+            reply = '@{} here is a word cloud for this article {}'
             reply = reply.format(user_name, url)
         else:
-            reply = 'Sorry, @{}, unable to create a word cloud. {}'
+            reply = 'Sorry @{}! unable to create a word cloud. {}'
             reply = reply.format(user_name, err_msg)
         return reply
 
@@ -243,12 +235,13 @@ class AtmosSciBot(object):
                             reply = self.make_reply(user_name, short_url)
                             kw['imgname'] = imgname
                         else:
+                            # print(self.error_in_wordcloud_gen)
                             # TODO: specify the problem
-                            err_msg = 'Check the URL'
+                            err_msg = 'Check your request or the URL'
                             reply = self.make_reply(user_name, short_url,
                                                     err_msg)
                     else:
-                        err_msg = 'There is not enough text'
+                        err_msg = 'There is not enough text (<100 words retrieved)'
                         reply = self.make_reply(user_name, short_url, err_msg)
                 # else:
                 # TODO: reply or not that is the question

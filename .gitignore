@@ -6,3 +6,4 @@ mentions.json
 *.log
 processed_entries*
 latest_wordcloud/*
+googlefonts/*

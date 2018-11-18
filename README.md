@@ -18,16 +18,16 @@ Example:
 
 ### Font selection
 A on-demand generation request can contain a name of Google Font (https://fonts.google.com) and the wordcloud will use the chosen font if **the request is correct**.
-To choose font, include `[font:<name of the font>]` in the tweet. The word cloud will use the "Regular" (400) style of the font.
+To choose font, include `[font=<name of the font>]` in the tweet. The word cloud will use the "Regular" (400) style of the font.
 This option is made possible thanks to this [google-font-download script](https://github.com/neverpanic/google-font-download).
 
 Example:
 ```
-@AtmosSciBot make wordcloud please [font:Raleway] #QJRMS https://rmets.onlinelibrary.wiley.com/doi/full/10.1002/qj.2911
+@AtmosSciBot make wordcloud please [font=Raleway] #QJRMS https://rmets.onlinelibrary.wiley.com/doi/full/10.1002/qj.2911
 ```
 or (note the spaces)
 ```
-@AtmosSciBot make wordcloud please [font:M PLUS 1p] #QJRMS https://rmets.onlinelibrary.wiley.com/doi/full/10.1002/qj.2911
+@AtmosSciBot make wordcloud please [font=M PLUS 1p] #QJRMS https://rmets.onlinelibrary.wiley.com/doi/full/10.1002/qj.2911
 ```
 If something is wrong with the font-related request, the wordcloud is created using the default font (https://fonts.google.com/specimen/Chicle).
 
