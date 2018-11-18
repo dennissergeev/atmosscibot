@@ -272,6 +272,8 @@ class AtmosSciBot(object):
                     # TODO: needs improvement...
                     if entry.author == '':
                         new_entry = False
+                new_entry = self.check_new_entry(url)
+
                 # if j_short_name in ['ACP', 'AMT', 'GMD']:
                 try:
                     isdiscuss = entry.isdiscussion == 'yes'
@@ -281,8 +283,6 @@ class AtmosSciBot(object):
                 if isdiscuss:
                     # Do not process discussion papers in EGU journals
                     new_entry = False
-
-                new_entry = self.check_new_entry(url)
 
                 if new_entry:
                     _msg = '({jshort}) New entry in: {url}'
