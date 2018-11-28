@@ -47,7 +47,8 @@ def text_from_soup(url, parser, find_args,
         soup = bs4.BeautifulSoup(doc, parser)
         if check_for_open_access is not None:
             oa_check = soup.find_all(**check_for_open_access)
-            if len(oa_check) == 0:
+            # if len(oa_check) == 0:
+            if len(oa_check) > 0:
                 result = soup.find_all(**find_args)
             else:
                 return ''
@@ -185,9 +186,16 @@ def extract_text(url, journal, url_ready=False, isdiscuss=False):
             # because older open-access papers do not have CC license
             # Check if there is a button to get access
             # NOTE: text_from_soup() is changed accordingly
-            _class_attr = dict(title='Log in to get access')
-            check_for_open_access = dict(name='a',
-                                         attrs=_class_attr)
+            # _class_attr = dict(title='Log in to get access')
+            # check_for_open_access = dict(name='a',
+            #                              attrs=_class_attr)
+            #
+            # 2018-11-28: Changed again to check for a OA badge,
+            # because closed-access accepted issues go through
+            check_for_open_access = dict(name='div',
+                                         text=lambda x: x in ['Open Access',
+                                                              'Free Access'],
+                                         attrs={'class': 'doi-access'})
 
     elif journal.upper() in ['TA', 'TB']:
         # Tellus A/B
