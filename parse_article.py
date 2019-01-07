@@ -6,6 +6,7 @@ import bs4
 import requests
 import urllib
 import warnings
+from fake_useragent import UserAgent
 
 
 def text_from_soup(url, parser, find_args,
@@ -37,7 +38,8 @@ def text_from_soup(url, parser, find_args,
     text: str
         Extracted text joined by whitespace
     """
-    req = requests.get(url)
+    ua = UserAgent()
+    req = requests.get(url, headers={'User-Agent': ua.data_browsers['chrome'][2]})
 
     if req.status_code == 200:
         # try:
@@ -241,6 +243,9 @@ def extract_text(url, journal, url_ready=False, isdiscuss=False):
                                 'xmlns:oasis':
                                 'http://www.niso.org/standards/z39-96/ns/oasis-exchange/table'  # NOQA
                                })
+        # find_args = dict(name='div',
+        #                  attrs={'class':
+        #                         'NLM_sec NLM_sec_level_1'})
 
     elif journal.upper() == 'ATMOS':
         # MDPI Atmosphere

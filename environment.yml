@@ -6,11 +6,13 @@ dependencies:
    - beautifulsoup4
    - feedparser
    - lxml
+   - matplotlib
    - numpy
    - pillow
    - requests
    - tinydb
    - wordcloud
    - pip:
+       - fake_useragent
        - tweepy
        - git+https://github.com/bitly/bitly-api-python
