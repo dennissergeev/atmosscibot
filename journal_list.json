@@ -26,7 +26,7 @@
     {
         "name": "Atmospheric Science Letters",
         "short_name": "ASL",
-        "cmap": "gist_earth",
+        "cmap": "Accent",
         "rss": "http://onlinelibrary.wiley.com/rss/journal/10.1002/(ISSN)1530-261X"
     },
     {
