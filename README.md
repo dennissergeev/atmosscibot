@@ -18,6 +18,7 @@ Example:
 ```
 @AtmosSciBot make wordcloud please #JGRA http://onlinelibrary.wiley.com/doi/10.1002/2015JD024680/full
 ```
+**Note** you may have to wait for a couple of hours until the request is processed.
 
 ### Font selection
 A on-demand generation request can contain a name of Google Font (https://fonts.google.com) and the wordcloud will use the chosen font if **the request is correct**.
