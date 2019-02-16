@@ -227,7 +227,7 @@ class AtmosSciBot(object):
                     self.text = extract_text(url, j_short_name,
                                              url_ready=True,
                                              isdiscuss=False)
-                    if len(self.text) > self.minwords:
+                    if len(self.text.split(' ')) >= self.minwords:
                         self.generate_wc()
                         if self.error_in_wordcloud_gen is None:
                             imgname = self.img_file
