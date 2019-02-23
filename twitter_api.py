@@ -53,7 +53,7 @@ class TwitterApi(object):
                 self.twitter_api.update_with_media(imgname, **kwargs)
             except tweepy.TweepError as e:
                 # print('wait...')
-                time.wait(self.wait_seconds)
+                time.sleep(self.wait_seconds)
                 self.twitter_api.update_with_media(imgname, **kwargs)
         else:
             # post tweet without a wordcloud
