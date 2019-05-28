@@ -18,6 +18,8 @@ Example:
 ```
 @AtmosSciBot make wordcloud please #JGRA http://onlinelibrary.wiley.com/doi/10.1002/2015JD024680/full
 ```
+**Note** only **open-access** articles can be processed, otherwise the bot will reply that it is unable to retrieve text.
+
 **Note** you may have to wait for a couple of hours until the request is processed.
 
 ### Font selection
