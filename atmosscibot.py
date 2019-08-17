@@ -24,7 +24,13 @@ from shorten_url_api import UrlShortener
 from twitter_api import TwitterApi
 
 
+SUCCESS = 0
+NO_TEXT = 1  # mostly because it's not open access
+
+
 class AtmosSciBot(object):
+    """Main class for running atmosscibot."""
+
     def __init__(self, curdir, settings, twitter_api, url_shortener, logger):
         self.settings = settings
         self.BOT_NAME = self.settings.get_bot_name()
@@ -50,13 +56,17 @@ class AtmosSciBot(object):
         self.url_shortener = url_shortener
 
     def check_new_entry(self, url):
+        # TODO: check status?
         query_result = self.DB.search(where("url") == url)
-        new_entry = False if len(query_result) > 0 else True
+        if len(query_result) > 0:
+            new_entry = False
+        else:
+            new_entry = True
         return new_entry
 
-    def write_entry(self, url, j_short_name):
+    def write_entry(self, url, j_short_name, status):
         tstamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-        new_entry = dict(journal_short_name=j_short_name, url=url, datetime=tstamp)
+        new_entry = dict(journal_short_name=j_short_name, url=url, status=status, datetime=tstamp)
         self.DB.insert(new_entry)
 
     def make_title(self, url, journal, title, isdiscuss=False):
@@ -99,7 +109,7 @@ class AtmosSciBot(object):
             # Download font or use the default one
             font_path = get_font(self.font_name)
             if self.allow_font_change:
-                logger.info("Using {} font".format(font_path))
+                logger.info(f"Using {font_path} font")
             # print(font_path)
 
             wc = WordCloud(
@@ -154,11 +164,9 @@ class AtmosSciBot(object):
 
     def make_reply(self, user_name, url, err_msg=None):
         if err_msg is None:
-            reply = "@{} here is a word cloud for this article {}"
-            reply = reply.format(user_name, url)
+            reply = f"@{user_name} here is a word cloud for this article {url}"
         else:
-            reply = "Sorry @{}! unable to create a word cloud. {}"
-            reply = reply.format(user_name, err_msg)
+            reply = f"Sorry @{user_name}! I am unable to create a word cloud. {err_msg}"
         return reply
 
     def check_new_mention(self, mention):
@@ -197,8 +205,9 @@ class AtmosSciBot(object):
             # may be redundant...
             new_mention = self.check_new_mention(mention)
             if new_mention:
-                _msg = "Handling mention: from: @{}, with id: {}"
-                self.logger.info(_msg.format(mention.user.screen_name, mention.id_str))
+                self.logger.info(
+                    f"Handling mention from @{mention.user.screen_name}, with id={mention.id_str}"
+                )
                 self.save_mention(mention)
 
                 user_name = mention.user.screen_name
@@ -250,8 +259,7 @@ class AtmosSciBot(object):
             f = fp.parse(journ["rss"])
             j_short_name = journ["short_name"]
             self.cmap = journ["cmap"]
-            _msg = "({jshort}) Parsed RSS of {jname}"
-            self.logger.info(_msg.format(jname=journ["name"], jshort=j_short_name))
+            self.logger.info(f"({j_short_name}) Parsed RSS of {journ['name']}")
 
             for i, entry in enumerate(f.entries):
                 url = entry.link
@@ -273,8 +281,7 @@ class AtmosSciBot(object):
                     new_entry = False
 
                 if new_entry:
-                    _msg = "({jshort}) New entry in: {url}"
-                    self.logger.info(_msg.format(jshort=j_short_name, url=url))
+                    self.logger.info(f"({j_short_name}) New entry in: {url}")
                     self.text = extract_text(
                         url, j_short_name, url_ready=False, isdiscuss=isdiscuss
                     )
@@ -288,19 +295,21 @@ class AtmosSciBot(object):
                             )
                             short_url = self.url_shortener.shorten(url)
                             self.twitter_api.post_tweet(ttl, short_url, imgname)
-                            self.write_entry(url, j_short_name)
+                            self.write_entry(url, j_short_name, status=SUCCESS)
                             # time.sleep(10)
                         else:
-                            _warn = "({jshort}) Wordcloud generation ERR: {e}"
-                            _msg = _warn.format(jshort=j_short_name, e=self.error_in_wordcloud_gen)
-                            self.logger.warning(_msg)
+                            self.logger.warning(
+                                f"({j_short_name}) Error in word cloud generation:"
+                                f" {self.error_in_wordcloud_gen}"
+                            )
                     else:
                         imgname = None
-                        _warn = "({jshort}) Text length {textlen}" " is less than {minlen}"
-                        _msg = _warn.format(
-                            jshort=j_short_name, textlen=len(self.text), minlen=(self.minwords)
+                        self.logger.warning(
+                            f"({j_short_name}) Text length len{self.text}"
+                            f" is less than {self.minwords}"
                         )
-                        self.logger.warning(_msg)
+                        if len(self.text) == 0:
+                            self.write_entry(url, j_short_name, status=NO_TEXT)
 
 
 if __name__ == "__main__":
