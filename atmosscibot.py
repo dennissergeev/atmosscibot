@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Bot that creates word clouds from scientific articles and posts them to Twitter
+Main body of atmosscibot.
+
+This bot creates word clouds from scientific articles and posts them to Twitter.
 """
 from datetime import datetime
 from glob import glob
@@ -316,7 +318,7 @@ if __name__ == "__main__":
     log_file = os.path.join(log_dir, s.get_log_filename().format(datetime=tstamp))
 
     # create logger
-    logger = logging.getLogger("atmosscibot_main")
+    logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
     # create file handler which logs even debug messages
     fh = logging.FileHandler(log_file)

@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+"""atmosscibot settings interface."""
 import configparser
 
 
 class Settings(object):
+    """Read configs from a file and store them in a dictionary."""
+
     def __init__(self, settings_file):
         self.settings_file = settings_file
         self.config = configparser.ConfigParser()

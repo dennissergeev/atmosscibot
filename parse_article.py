@@ -1,21 +1,17 @@
 # -*- coding: utf-8 -*-
-"""
-Retrieve journal article and get text
-"""
+"""Retrieve journal article's HTML/XML and extract the text."""
 import bs4
+import logging
 import requests
 import urllib
-import warnings
 from fake_useragent import UserAgent
 
 
+logger = logging.getLogger(__name__)
+
+
 def text_from_soup(
-    url,
-    parser,
-    find_args,
-    check_for_open_access=None,
-    between_children=None,
-    escape_result=None,
+    url, parser, find_args, check_for_open_access=None, between_children=None, escape_result=None
 ):
     """
     Extract text from html or xml page using beautifulsoup
@@ -44,7 +40,10 @@ def text_from_soup(
         Extracted text joined by whitespace
     """
     ua = UserAgent()
-    req = requests.get(url, headers={"User-Agent": ua.data_browsers["chrome"][2]})
+    try:
+        req = requests.get(url, headers={"User-Agent": ua.data_browsers["chrome"][2]})
+    except requests.exceptions.RequestException as e:
+        logger.debug(f"Exception {e} when processing {url}")
 
     if req.status_code == 200:
         # try:
@@ -234,7 +233,7 @@ def extract_text(url, journal, url_ready=False, isdiscuss=False):
             doc_url = parsed_link.geturl()
         else:
             doc_url = parsed_link._replace(path=new_path, query="").geturl()
-        # print(doc_url)
+        # logger.info(doc_url)
         parser = "lxml-html"
         find_args = dict(
             name="p",
@@ -269,17 +268,12 @@ def extract_text(url, journal, url_ready=False, isdiscuss=False):
         escape_result = dict(name="div", attrs={"class": ["References"]})
 
     else:
-        warnings.warn("Skip {0} journal: no rule for it".format(journal))
+        logger.info("Skip {0} journal: no rule for it".format(journal))
         doc_url = None
 
     if doc_url is not None:
         text = text_from_soup(
-            doc_url,
-            parser,
-            find_args,
-            check_for_open_access,
-            between_tags,
-            escape_result,
+            doc_url, parser, find_args, check_for_open_access, between_tags, escape_result
         )
     else:
         text = ""
