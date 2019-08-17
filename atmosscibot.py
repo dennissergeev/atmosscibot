@@ -305,7 +305,7 @@ class AtmosSciBot(object):
                     else:
                         imgname = None
                         self.logger.warning(
-                            f"({j_short_name}) Text length len{self.text}"
+                            f"({j_short_name}) Text length {len(self.text)}"
                             f" is less than {self.minwords}"
                         )
                         if len(self.text) == 0:
