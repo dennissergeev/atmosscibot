@@ -44,6 +44,7 @@ def text_from_soup(
         req = requests.get(url, headers={"User-Agent": ua.data_browsers["chrome"][2]})
     except requests.exceptions.RequestException as e:
         logger.debug(f"Exception {e} when processing {url}")
+        return ""
 
     if req.status_code == 200:
         # try:
