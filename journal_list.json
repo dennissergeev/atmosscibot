@@ -112,5 +112,11 @@
         "short_name": "BAMS",
         "cmap": "copper",
         "rss": "http://journals.ametsoc.org/action/showFeed?type=etoc&feed=rss&jc=bams"
+    },
+    {
+        "name": "Earth Interactions",
+        "short_name": "EINT",
+        "cmap": "tab20b",
+        "rss": "https://journals.ametsoc.org/action/showFeed?type=etoc&feed=rss&jc=eint"
     }
 ]

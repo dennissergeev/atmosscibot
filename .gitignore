@@ -2,7 +2,7 @@ settings.ini
 *.pem
 mentions.json
 *.pyc
-.ipynb_checkpoints
+*.ipynb*
 *.log
 processed_entries*
 latest_wordcloud/*
