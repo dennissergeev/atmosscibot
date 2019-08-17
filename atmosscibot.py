@@ -65,7 +65,7 @@ class AtmosSciBot(object):
             journal_name = journal
         if journal.upper() == "ATMOS":
             title = re.sub(r"Atmosphere, Vol. [0-9]+, Pages [0-9]+: ", "", title)
-        return "{}: {}".format(journal_name, title)
+        return "#{}: {}".format(journal_name, title)
 
     def make_img_file(self):
         output_dir = os.path.join(self.curdir, self.temp_dir)
@@ -253,7 +253,7 @@ class AtmosSciBot(object):
 
             for i, entry in enumerate(f.entries):
                 url = entry.link
-                if j_short_name == "ASL" and "author" in entry:
+                if (j_short_name == "ASL") and ("author" in entry):
                     # Skip "Issue information"
                     # TODO: needs improvement...
                     if entry.author == "":
