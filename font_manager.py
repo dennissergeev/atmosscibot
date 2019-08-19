@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Get font for wordcloud."""
 from glob import glob
+import logging
 import os
 import subprocess as sb
 
@@ -9,6 +10,7 @@ DEFAULT_FONT_PATH = "fonts/Chicle/Chicle-Regular.ttf"
 GOOGLEFONT_DOWNLOAD_SCRIPT = "../google-font-download/google-font-download"
 ALL_EXTENSIONS = ["woff2", "woff", "eot", "svg", "ttf"]
 FONT_EXTENSIONS = ["otf", "ttf"]
+logger = logging.getLogger(__name__)
 
 
 def get_font(font_name):
@@ -29,8 +31,7 @@ def get_font(font_name):
                     os.mkdir(font_dir)
                 for f in glob(
                     os.path.join(
-                        os.path.expanduser("~"),
-                        "{}_400.*".format(font_name.replace(" ", "_")),
+                        os.path.expanduser("~"), "{}_400.*".format(font_name.replace(" ", "_"))
                     )
                 ):
                     try:
@@ -39,8 +40,7 @@ def get_font(font_name):
                         if os.path.splitext(new_name)[1][1:] in FONT_EXTENSIONS:
                             files.append(new_name)
                     except Exception as e:
-                        _msg = "ERR when moving {f}: {e}"
-                        logger.warning(_msg.format(f=f, e=e))
+                        logger.warning(f"Error when moving {f}: {e}")
             try:
                 # print(files)
                 return files[0]
@@ -49,5 +49,5 @@ def get_font(font_name):
         else:
             return default
     except Exception as e:
-        # print(e)
+        logger.warning(f"Exception: {e}")
         return default

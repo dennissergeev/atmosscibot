@@ -58,10 +58,7 @@ class AtmosSciBot(object):
     def check_new_entry(self, url):
         # TODO: check status?
         query_result = self.DB.search(where("url") == url)
-        if len(query_result) > 0:
-            new_entry = False
-        else:
-            new_entry = True
+        new_entry = len(query_result) == 0
         return new_entry
 
     def write_entry(self, url, j_short_name, status):
