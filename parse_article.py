@@ -120,7 +120,7 @@ def extract_text(url, journal, url_ready=False, isdiscuss=False):
     escape_result = None
     check_for_open_access = None
 
-    if journal.upper() in ["ACP", "AMT", "GMD"]:
+    if journal.upper() in ["ACP", "AMT", "GMD", "WCD"]:
         # EGU journals
         if journal.upper() == "ACP":
             # TODO: make this automatic
@@ -129,6 +129,8 @@ def extract_text(url, journal, url_ready=False, isdiscuss=False):
             netloc = "http://www.atmos-meas-tech{}.net"
         elif journal.upper() == "GMD":
             netloc = "http://www.geosci-model-dev{}.net"
+        elif journal.upper() == "WCD":
+            netloc = "http://www.weather-clim-dynam{}.net"
         link_path = parsed_link.path
         path_split = [s for s in link_path.split("/") if s]
         if isdiscuss:

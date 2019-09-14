@@ -118,5 +118,11 @@
         "short_name": "BAMS",
         "cmap": "copper",
         "rss": "http://journals.ametsoc.org/action/showFeed?type=etoc&feed=rss&jc=bams"
-    }
+    },
+    {
+        "name": "Weather and Climate Dynamics",
+        "short_name": "WCD",
+        "cmap": "Reds",
+        "rss": "http://www.weather-clim-dynam.net/xml/rss2_0.xml"
+    },
 ]
