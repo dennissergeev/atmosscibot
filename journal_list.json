@@ -124,5 +124,5 @@
         "short_name": "WCD",
         "cmap": "Reds",
         "rss": "http://www.weather-clim-dynam.net/xml/rss2_0.xml"
-    },
+    }
 ]
