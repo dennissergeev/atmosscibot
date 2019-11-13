@@ -181,8 +181,8 @@ def extract_text(url, journal, url_ready=False, isdiscuss=False):
         #                 attrs={'class':
         #                        'article-section article-body-section'})
         # Wiley's website seems to have changed HTML tags, so now the text is
-        # within div tags of class "article-section__content"
-        find_args = dict(name="div", attrs={"class": "article-section__content"})
+        # within div or section tags of class "article-section__content"
+        find_args = dict(name=["div", "section"], attrs={"class": "article-section__content"})
         if journal.upper() in ["JGRA", "QJRMS", "GRL"]:
             # # parse only the articles that are open-access
             # # under the Creative Commons license
