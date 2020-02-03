@@ -129,6 +129,7 @@
         "name": "Proceedings of the National Academy of Science",
         "short_name": "PNAS",
         "cmap": "Reds",
-        "rss": "https://www.pnas.org/page/about/rss"
+#        "rss": "https://www.pnas.org/page/about/rss"
+        "rss": "https://feeds.feedburner.com/Pnas-RssFeedOfEarlyEditionArticles"
     }
 ]
