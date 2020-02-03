@@ -124,5 +124,11 @@
         "short_name": "WCD",
         "cmap": "Reds",
         "rss": "http://www.weather-clim-dynam.net/xml/rss2_0.xml"
+    },
+    {
+        "name": "Proceedings of the National Academy of Science",
+        "short_name": "PNAS",
+        "cmap": "Reds",
+        "rss": "https://www.pnas.org/page/about/rss"
     }
 ]
