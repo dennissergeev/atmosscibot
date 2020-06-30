@@ -39,8 +39,8 @@ class Settings(object):
     def get_stopwords_dir(self):
         return self.config[self.CONFIGS]["stopwords_dir"]
 
-    def get_wordcloud_mask(self):
-        return self.config[self.CONFIGS]["wordcloud_mask"]
+    def get_wordcloud_mask_dir(self):
+        return self.config[self.CONFIGS]["wordcloud_mask_dir"]
 
     # def get_font_path(self):
     #     return self.config[self.CONFIGS].get('font_path')

@@ -5,18 +5,23 @@ Main body of atmosscibot.
 
 This bot creates word clouds from scientific articles and posts them to Twitter.
 """
+# Standard library
 from datetime import datetime
-from glob import glob
-import feedparser as fp
-import json
 import logging
-import numpy as np
+import json
+from glob import glob
 import os
-from PIL import Image
+from random import choice
 import re
+
+# External packages
+import feedparser as fp
+import numpy as np
+from PIL import Image
 from tinydb import TinyDB, where
 from wordcloud import WordCloud, STOPWORDS
 
+# Local modules
 from font_manager import get_font
 from parse_article import extract_text
 from settings import Settings
@@ -45,7 +50,7 @@ class AtmosSciBot(object):
         self.dpi = self.settings.get_dpi()
         self.width = self.settings.get_width()
         self.height = self.settings.get_height()
-        self.wordcloud_mask = self.settings.get_wordcloud_mask()
+        self.wordcloud_mask_dir = self.settings.get_wordcloud_mask_dir()
         self.allow_font_change = self.settings.get_font_switch()
         self.font_name = None  # use default font
         self.temp_dir = self.settings.get_temp_dir()
@@ -92,22 +97,26 @@ class AtmosSciBot(object):
                 exclude_words += f.read().split("\n")
         self.exclude_words = set(exclude_words)
 
+    def get_stencil(self):
+        """Randomly select a stencil from the specified directory."""
+        # Other masks can be extracted from
+        # Font-Awesome (http://minimaxir.com/2016/05/wordclouds/)
+        imgdir = os.path.join(self.curdir, self.wordcloud_mask_dir)
+        imgpath = choice(glob(os.path.join(imgdir, "cloud_*.png")))
+        self.stencil = np.array(Image.open(imgpath))
+
     def generate_wc(self, background_color="#ffffff"):
         """generate wordcloud and save to file"""
         # fig_kw = dict(figsize=(self.width/self.dpi, self.height/self.dpi),
         #               dpi=self.dpi)
         self.get_exclude_words()
         try:
-            imgpath = os.path.join(self.curdir, self.wordcloud_mask)
-            arr = np.array(Image.open(imgpath))
-            # Other masks can be extracted from
-            # Font-Awesome (http://minimaxir.com/2016/05/wordclouds/)
+            self.get_stencil()
 
             # Download font or use the default one
             font_path = get_font(self.font_name)
             if self.allow_font_change:
                 logger.info(f"Using {font_path} font")
-            # print(font_path)
 
             wc = WordCloud(
                 width=self.width,
@@ -117,7 +126,7 @@ class AtmosSciBot(object):
                 stopwords=self.exclude_words,
                 background_color=background_color,
                 mode="RGBA",
-                mask=arr,
+                mask=self.stencil,
             ).generate(self.text)
 
             self.make_img_file()
@@ -128,7 +137,6 @@ class AtmosSciBot(object):
 
         except Exception as e:
             self.error_in_wordcloud_gen = e
-            # print(e)
 
     def parse_request(self, mention):
         regex_font = r"\[font=\s*([\w\s]*)\]"
@@ -231,7 +239,6 @@ class AtmosSciBot(object):
                             reply = self.make_reply(user_name, short_url)
                             kw["imgname"] = imgname
                         else:
-                            # print(self.error_in_wordcloud_gen)
                             # TODO: specify the problem
                             err_msg = "Check your request or the URL"
                             reply = self.make_reply(user_name, short_url, err_msg)
