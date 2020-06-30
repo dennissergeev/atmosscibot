@@ -1,17 +1,25 @@
 # -*- coding: utf-8 -*-
 """Retrieve journal article's HTML/XML and extract the text."""
-import bs4
+# Standard library
 import logging
-import requests
 import urllib
+
+# External libraries
+import bs4
 from fake_useragent import UserAgent
+import requests
 
 
 logger = logging.getLogger(__name__)
 
 
 def text_from_soup(
-    url, parser, find_args, check_for_open_access=None, between_children=None, escape_result=None
+    url,
+    parser,
+    find_args,
+    check_for_open_access=None,
+    between_children=None,
+    escape_result=None,
 ):
     """
     Extract text from html or xml page using beautifulsoup
@@ -182,7 +190,9 @@ def extract_text(url, journal, url_ready=False, isdiscuss=False):
         #                        'article-section article-body-section'})
         # Wiley's website seems to have changed HTML tags, so now the text is
         # within div or section tags of class "article-section__content"
-        find_args = dict(name=["div", "section"], attrs={"class": "article-section__content"})
+        find_args = dict(
+            name=["div", "section"], attrs={"class": "article-section__content"}
+        )
         if journal.upper() in ["JGRA", "QJRMS", "GRL"]:
             # # parse only the articles that are open-access
             # # under the Creative Commons license
@@ -238,18 +248,10 @@ def extract_text(url, journal, url_ready=False, isdiscuss=False):
             doc_url = parsed_link._replace(path=new_path, query="").geturl()
         # logger.info(doc_url)
         parser = "lxml-html"
-        find_args = dict(
-            name="p",
-            attrs={
-                "xmlns:mml": "http://www.w3.org/1998/Math/MathML",
-                "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
-                "xmlns:ali": "http://www.niso.org/schemas/ali/1.0/",
-                "xmlns:oasis": "http://www.niso.org/standards/z39-96/ns/oasis-exchange/table",  # NOQA
-            },
+        find_args = dict(name="p")
+        escape_result = dict(
+            name="a", attrs={"class": "link link-ref link-reveal xref-bibr"}
         )
-        # find_args = dict(name='div',
-        #                  attrs={'class':
-        #                         'NLM_sec NLM_sec_level_1'})
 
     elif journal.upper() == "ATMOS":
         # MDPI Atmosphere
@@ -276,7 +278,12 @@ def extract_text(url, journal, url_ready=False, isdiscuss=False):
 
     if doc_url is not None:
         text = text_from_soup(
-            doc_url, parser, find_args, check_for_open_access, between_tags, escape_result
+            doc_url,
+            parser,
+            find_args,
+            check_for_open_access,
+            between_tags,
+            escape_result,
         )
     else:
         text = ""
