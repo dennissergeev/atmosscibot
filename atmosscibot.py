@@ -57,6 +57,8 @@ class AtmosSciBot(object):
         self.temp_file = self.settings.get_temp_file()
         self.mentions_file = self.settings.get_mentions_file()
 
+        self.no_magic_word_gif = self.settings.get_no_magic_word_gif()
+
         self.twitter_api = twitter_api
         self.url_shortener = url_shortener
 
@@ -68,7 +70,9 @@ class AtmosSciBot(object):
 
     def write_entry(self, url, j_short_name, status):
         tstamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-        new_entry = dict(journal_short_name=j_short_name, url=url, status=status, datetime=tstamp)
+        new_entry = dict(
+            journal_short_name=j_short_name, url=url, status=status, datetime=tstamp
+        )
         self.DB.insert(new_entry)
 
     def make_title(self, url, journal, title, isdiscuss=False):
@@ -164,8 +168,8 @@ class AtmosSciBot(object):
         contains_url = len(mention.entities["urls"]) == 1
         if contains_url:
             url = mention.entities["urls"][0]["expanded_url"]
-        is_correct = contains_request and contains_magic_word and contains_j_name and contains_url
-        return is_correct, url, j_short_name, font_name
+        is_correct = contains_request and contains_j_name and contains_url
+        return is_correct, contains_magic_word, url, j_short_name, font_name
 
     def make_reply(self, user_name, url, err_msg=None):
         if err_msg is None:
@@ -221,35 +225,54 @@ class AtmosSciBot(object):
                     continue
 
                 kw = dict(imgname=None, in_reply_to_status_id=mention.id_str)
-                is_correct, url, j_short_name, self.font_name = self.parse_request(mention)
+                (
+                    is_correct,
+                    please,
+                    url,
+                    j_short_name,
+                    self.font_name,
+                ) = self.parse_request(mention)
                 short_url = None
-                if is_correct and j_short_name in [i["short_name"] for i in self.j_list]:
-                    self.cmap = [i["cmap"] for i in self.j_list if i["short_name"] == j_short_name][
-                        0
-                    ]
+                no_error = True
+                if not is_correct:
+                    err_msg = "Sorry, your request was not correct."
+                    reply = self.make_reply(user_name, short_url, err_msg)
+                    no_error = False
+                if not please:
+                    err_msg = "You did't say the magic word!"
+                    kw["imgname"] = self.no_magic_word_gif
+                    reply = self.make_reply(user_name, short_url, err_msg)
+                    no_error = False
+                if j_short_name not in [i["short_name"] for i in self.j_list]:
+                    err_msg = "Sorry, requested journal is not on the journal list."
+                    reply = self.make_reply(user_name, short_url, err_msg)
+                    no_error = False
+                if no_error:
+                    self.cmap = [
+                        i["cmap"]
+                        for i in self.j_list
+                        if i["short_name"] == j_short_name
+                    ][0]
                     # URL must be correct and directly lead to
                     # webpage with text to be parsed
                     # (unlike the ones in RSS feeds)
-                    self.text = extract_text(url, j_short_name, url_ready=True, isdiscuss=False)
+                    self.text = extract_text(
+                        url, j_short_name, url_ready=True, isdiscuss=False
+                    )
                     if len(self.text.split(" ")) >= self.minwords:
                         self.generate_wc()
                         if self.error_in_wordcloud_gen is None:
-                            imgname = self.img_file
                             short_url = self.url_shortener.shorten(url)
                             reply = self.make_reply(user_name, short_url)
-                            kw["imgname"] = imgname
+                            kw["imgname"] = self.img_file
                         else:
                             # TODO: specify the problem
                             err_msg = "Check your request or the URL"
                             reply = self.make_reply(user_name, short_url, err_msg)
                     else:
-                        err_msg = "There is not enough text (<100 words retrieved)"
+                        err_msg = "Something went wrong: not enough text (<100 words retrieved)"
                         reply = self.make_reply(user_name, short_url, err_msg)
-                    # else:
-                    # TODO: reply or not that is the question
-                    #     err_msg = 'Your request is not correct'
-                    #     reply = self.make_reply(user_name, short_url, err_msg)
-                    self.twitter_api.post_tweet(reply, short_url, **kw)
+                self.twitter_api.post_tweet(reply, short_url, **kw)
 
     def run(self):
         with open(self.j_list_path) as json_file:

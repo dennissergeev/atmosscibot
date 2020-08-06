@@ -82,3 +82,6 @@ class Settings(object):
 
     def get_bot_name(self):
         return self.config[self.CONFIGS]["botname"]
+
+    def get_no_magic_word_gif(self):
+        return self.config[self.CONFIGS]["get_no_magic_word_gif"]
