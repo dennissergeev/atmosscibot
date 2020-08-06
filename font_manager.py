@@ -18,6 +18,7 @@ def get_font(font_name):
     curdir = os.path.dirname(os.path.realpath(__file__))
     default = os.path.join(curdir, DEFAULT_FONT_PATH)
     if font_name is None:
+        logger.info(f"Using default font")
         return default
     try:
         script = os.path.join(curdir, GOOGLEFONT_DOWNLOAD_SCRIPT)
@@ -40,14 +41,16 @@ def get_font(font_name):
                         if os.path.splitext(new_name)[1][1:] in FONT_EXTENSIONS:
                             files.append(new_name)
                     except Exception as e:
-                        logger.warning(f"Error when moving {f}: {e}")
+                        logger.error(f"Error when moving {f}: {e}")
             try:
                 # print(files)
                 return files[0]
             except IndexError:
+                logger.error(f"Error: files={files}")
                 return default
         else:
+            logger.error(f"Error {p.returncode} in running {script}")
             return default
     except Exception as e:
-        logger.warning(f"Exception: {e}")
+        logger.error(f"Exception: {e}")
         return default

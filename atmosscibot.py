@@ -289,7 +289,11 @@ class AtmosSciBot(object):
             self.logger.info(f"({j_short_name}) Parsed RSS of {journ['name']}")
 
             for i, entry in enumerate(f.entries):
-                url = entry.link
+                try:
+                    url = entry.link
+                except AttributeError:
+                    self.logger.error(f"No `link` attribute in entry={entry}")
+                    continue
                 if (j_short_name == "ASL") and ("author" in entry):
                     # Skip "Issue information"
                     # TODO: needs improvement...
