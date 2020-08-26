@@ -15,19 +15,19 @@
         "name": "Atmospheric Chemistry and Physics",
         "short_name": "ACP",
         "cmap": "tab20",
-        "rss": "http://www.atmos-chem-phys.net/xml/rss2_0.xml"
+        "rss": "https://acp.copernicus.org/articles/xml/rss2_0.xml"
     },
     {
         "name": "Atmospheric Measurement Techniques",
         "short_name": "AMT",
         "cmap": "cool",
-        "rss": "http://www.atmos-meas-tech.net/xml/rss2_0.xml"
+        "rss": "https://amt.copernicus.org/articles/xml/rss2_0.xml"
     },
     {
         "name": "Geoscientific Model Development",
         "short_name": "GMD",
         "cmap": "autumn",
-        "rss": "https://www.geosci-model-dev.net/xml/rss2_0.xml"
+        "rss": "https://gmd.copernicus.org/articles/xml/rss2_0.xml"
     },
     {
         "name": "Atmospheric Science Letters",
@@ -123,6 +123,6 @@
         "name": "Weather and Climate Dynamics",
         "short_name": "WCD",
         "cmap": "Reds",
-        "rss": "http://www.weather-clim-dynam.net/xml/rss2_0.xml"
+        "rss": "https://wcd.copernicus.org/articles/xml/rss2_0.xml"
     }
 ]

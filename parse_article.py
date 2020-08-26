@@ -120,7 +120,7 @@ def text_from_soup(
         return ""
 
 
-def extract_text(url, journal, url_ready=False, isdiscuss=False):
+def extract_text(url, journal, url_ready=False):
     """Download XML/HTML doc and parse it"""
     parsed_link = urllib.parse.urlparse(url)
 
@@ -130,39 +130,14 @@ def extract_text(url, journal, url_ready=False, isdiscuss=False):
 
     if journal.upper() in ["ACP", "AMT", "GMD", "WCD"]:
         # EGU journals
-        if journal.upper() == "ACP":
-            # TODO: make this automatic
-            netloc = "http://www.atmos-chem-phys{}.net"
-        elif journal.upper() == "AMT":
-            netloc = "http://www.atmos-meas-tech{}.net"
-        elif journal.upper() == "GMD":
-            netloc = "http://www.geosci-model-dev{}.net"
-        elif journal.upper() == "WCD":
-            netloc = "http://www.weather-clim-dynam{}.net"
-        link_path = parsed_link.path
-        path_split = [s for s in link_path.split("/") if s]
-        if isdiscuss:
-            # links like
-            # atmos-chem-phys-discuss.net/acp-2016-95/acp-2016-95.xml
-            netloc = netloc.format("-discuss")
-            # new_path = '{l}/{l}.xml'.format(l=link_path)
-            new_url = "{n}/{ll}/{ll}.xml".format(n=netloc, ll=path_split[1])
-            find_args = dict(name="abstract")
-        else:
-            netloc = netloc.format("")
-            # links like
-            # http://www.atmos-chem-phys.net/16/2309/2016/acp-16-2309-2016.xml
-            # new_path = '{}{}.xml'.format(link_path,
-            #                              '-'.join([journal.lower()] +
-            #                                       path_split))
-            _sub_path = "/".join(path_split[1].split("-")[1:])
-            new_url = "{}/{}/{}.xml".format(netloc, _sub_path, path_split[1])
-            find_args = dict(name="body")
         if url_ready:
             doc_url = parsed_link.geturl()
         else:
-            # doc_url = parsed_link._replace(path=new_path).geturl()
-            doc_url = new_url
+            netloc = "http://{}.copernicus.org/articles".format(journal.lower())
+            path_split = [s for s in parsed_link.path.split("/") if s]
+            _sub_path = "/".join(path_split[1].split("-")[1:])
+            doc_url = "{}/{}/{}.xml".format(netloc, _sub_path, path_split[1])
+        find_args = dict(name="body")
         parser = "lxml-xml"
 
     elif journal.upper() in ["BLM", "AAS", "MAP", "JAC", "TAC", "CC", "APJAS"]:
