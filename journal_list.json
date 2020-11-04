@@ -102,12 +102,6 @@
         "rss": "http://link.springer.com/search.rss?facet-journal-id=10584&package=openaccessarticles&search-within=Journal&query="
     },
     {
-        "name": "Atmosphere",
-        "short_name": "ATMOS",
-        "cmap": "cividis",
-        "rss": "http://www.mdpi.com/rss/journal/atmosphere"
-    },
-    {
         "name": "Frontiers",
         "short_name": "FRONT",
         "cmap": "Set2",
