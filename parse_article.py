@@ -170,7 +170,7 @@ def extract_text(url, journal, url_ready=False):
         parser = "lxml-html"
         find_args = dict(attrs={"class": "Para"})
 
-    elif journal.upper() in ["ASL", "JAMES", "JGRA", "QJRMS", "GRL"]:
+    elif journal.upper() in ["ASL", "JAMES", "JGRA", "QJRMS", "GRL", "METAPPS"]:
         # Wiley journals
         new_path = parsed_link.path.replace("/abs", "/full")
         if url_ready:

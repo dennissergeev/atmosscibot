@@ -60,6 +60,12 @@
         "rss": "http://onlinelibrary.wiley.com/rss/journal/10.1002/(ISSN)2169-8996"
     },
     {
+        "name": "Meteorological Applications",
+        "short_name": "METAPPS",
+        "cmap": "Greens",
+        "rss": "http://onlinelibrary.wiley.com/rss/journal/10.1002/(ISSN)1469-8080"
+    },
+    {
         "name": "Boundary-Layer Meteorology",
         "short_name": "BLM",
         "cmap": "magma",
@@ -76,18 +82,6 @@
         "short_name": "MAP",
         "cmap": "brg",
         "rss": "http://link.springer.com/search.rss?facet-journal-id=703&package=openaccessarticles&search-within=Journal&query="
-    },
-    {
-        "name": "Journal of Atmospheric Chemistry",
-        "short_name": "JAC",
-        "cmap": "inferno",
-        "rss": "http://link.springer.com/search.rss?facet-journal-id=10874&package=openaccessarticles&search-within=Journal&query="
-    },
-    {
-        "name": "Theoretical and Applied Climatology",
-        "short_name": "TAC",
-        "cmap": "gist_stern",
-        "rss": "http://link.springer.com/search.rss?facet-journal-id=704&package=openaccessarticles&search-within=Journal&query="
     },
     {
         "name": "Asia-Pacific Journal of Atmospheric Sciences",
@@ -125,5 +119,4 @@
         "cmap": "cividis",
         "rss": "http://feeds.nature.com/npjclimatsci/rss/current"
     }
-
 ]
