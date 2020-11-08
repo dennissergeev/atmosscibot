@@ -118,5 +118,12 @@
         "short_name": "WCD",
         "cmap": "Reds",
         "rss": "https://wcd.copernicus.org/articles/xml/rss2_0.xml"
+    },
+    {
+        "name": "npj Climate and Atmospheric Science",
+        "short_name": "NPJCLIMATSCI",
+        "cmap": "cividis",
+        "rss": "http://feeds.nature.com/npjclimatsci/rss/current"
     }
+
 ]

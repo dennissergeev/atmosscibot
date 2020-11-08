@@ -71,48 +71,68 @@ def text_from_soup(
             result = soup.find_all(**find_args)
 
         if escape_result is not None:
-            assert isinstance(escape_result, dict)
-            if len(result) == 1:
-                # if result consists of only 1 element,
-                # loop over its children and append tags to
-                # a new list, escaping tags specified by
-                # escape_result dictionary
-                _res = result[0]
-                result = []
-                for tag in _res:
-                    if isinstance(tag, bs4.element.Tag):
-                        if not (
-                            escape_result["name"] == tag.name
-                            and escape_result["attrs"]["class"] == tag.attrs["class"]
-                        ):
-                            result.append(tag)
-            else:
-                # Loop over tags in the list `result` and remove
-                # tags specified by escape_result dictionary
-                to_remove = []
-                for tag in result:
-                    found = tag.find_all(**escape_result)
-                    if len(found) != 0:
-                        to_remove.append(tag)
-                [result.remove(i) for i in to_remove]
+            if isinstance(escape_result, dict):
+                escape_result = [escape_result]
+            for esc in escape_result:
+                if len(result) == 1:
+                    # if result consists of only 1 element,
+                    # loop over its children and append tags to
+                    # a new list, escaping tags specified by
+                    # escape_result dictionary
+                    _res = result[0]
+                    result = []
+                    for tag in _res:
+                        if isinstance(tag, bs4.element.Tag):
+                            if not (
+                                esc["name"] == tag.name
+                                and esc["attrs"]["class"] == tag.attrs["class"]
+                            ):
+                                result.append(tag)
+                else:
+                    # Loop over tags in the list `result` and remove
+                    # tags specified by escape_result dictionary
+                    to_remove = []
+                    for tag in result:
+                        found = tag.find_all(**esc)
+                        if len(found) != 0:
+                            to_remove.append(tag)
+                    [result.remove(i) for i in to_remove]
 
         if between_children is None:
             return " ".join([i.text for i in result])
         else:
             assert len(between_children) == 2
-            for i, child_descr in enumerate(between_children):
-                if isinstance(child_descr, dict):
-                    child_tag = result[0].find_all(**child_descr)[0]
-                    between_children[i] = result[0].contents.index(child_tag)
-            children_subset = slice(*between_children)
-            text = ""
-            for child in result[0].contents[children_subset]:
-                try:
-                    text += child.text
-                except AttributeError:
-                    text += child.strip()
-                except Exception:
-                    pass
+            try:
+                for i, child_descr in enumerate(between_children):
+                    if isinstance(child_descr, dict):
+                        child_tag = result[0].find_all(**child_descr)[0]
+                        between_children[i] = result[0].contents.index(child_tag)
+                children_subset = slice(*between_children)
+                text = ""
+                for child in result[0].contents[children_subset]:
+                    try:
+                        text += child.text
+                    except AttributeError:
+                        text += child.strip()
+                    except Exception:
+                        pass
+            except IndexError:
+                to_keep = False
+                _res = []
+                for tag in result:
+                    found = tag.find_all(**between_children[0])
+                    if (len(found) != 0) or (
+                        between_children[0]["attrs"].items() <= tag.attrs.items()
+                    ):
+                        to_keep = True
+                    found = tag.find_all(**between_children[1])
+                    if (len(found) != 0) or (
+                        between_children[1]["attrs"].items() <= tag.attrs.items()
+                    ):
+                        to_keep = False
+                    if to_keep:
+                        _res.append(tag)
+                text = " ".join([i.text for i in _res])
             return text
     else:
         # except urllib.request.HTTPError as e:
@@ -124,7 +144,7 @@ def extract_text(url, journal, url_ready=False):
     """Download XML/HTML doc and parse it"""
     parsed_link = urllib.parse.urlparse(url)
 
-    between_tags = None
+    between_children = None
     escape_result = None
     check_for_open_access = None
 
@@ -196,7 +216,7 @@ def extract_text(url, journal, url_ready=False):
         doc_url = parsed_link.geturl()
         parser = "lxml-html"
         # find_args = dict(name='div', attrs={'id': 'articleHTML'})
-        # between_tags = [None, dict(name='h1', text='References')]
+        # between_children = [None, dict(name='h1', text='References')]
         find_args = dict(
             name="p",
             attrs={
@@ -247,6 +267,16 @@ def extract_text(url, journal, url_ready=False):
         find_args = dict(name="div", attrs={"class": "JournalFullText"})
         escape_result = dict(name="div", attrs={"class": ["References"]})
 
+    elif journal.upper() == "NPJCLIMATSCI":
+        doc_url = parsed_link.geturl()
+        parser = "lxml-html"
+        find_args = dict(name="section")
+        escape_result = dict(name="div", attrs={"class": "c-article-equation"})
+        between_children = [
+            dict(name="section", attrs={"data-title": "Abstract"}),
+            dict(name="section", attrs={"data-title": "References"}),
+        ]
+
     else:
         logger.info("Skip {0} journal: no rule for it".format(journal))
         doc_url = None
@@ -257,8 +287,8 @@ def extract_text(url, journal, url_ready=False):
             parser,
             find_args,
             check_for_open_access,
-            between_tags,
-            escape_result,
+            between_children=between_children,
+            escape_result=escape_result,
         )
     else:
         text = ""
