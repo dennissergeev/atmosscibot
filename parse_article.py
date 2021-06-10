@@ -162,13 +162,22 @@ def extract_text(url, journal, url_ready=False):
 
     elif journal.upper() in ["BLM", "AAS", "MAP", "JAC", "TAC", "CC", "APJAS"]:
         # Springer journals
-        new_path = "article{}/fulltext.html".format(parsed_link.path)
-        if url_ready:
-            doc_url = parsed_link.geturl()
-        else:
-            doc_url = parsed_link._replace(path=new_path).geturl()
+        doc_url = parsed_link.geturl()
+        # new_path = "article{}/fulltext.html".format(parsed_link.path)
+        # if url_ready:
+        #     doc_url = parsed_link.geturl()
+        # else:
+        #     doc_url = parsed_link._replace(path=new_path).geturl()
         parser = "lxml-html"
-        find_args = dict(attrs={"class": "Para"})
+        # find_args = dict(attrs={"class": "Para"})
+        # find_args = dict(
+        #     name="div", attrs={"class": "c-article-section__content"}
+        # )
+        find_args = dict(name="section")
+        between_children = [
+            dict(name="section", attrs={"data-title": "Abstract"}),
+            dict(name="section", attrs={"data-title": "References"}),
+        ]
 
     elif journal.upper() in ["ASL", "JAMES", "JGRA", "QJRMS", "GRL", "METAPPS"]:
         # Wiley journals
