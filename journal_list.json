@@ -1,11 +1,5 @@
 [
     {
-        "name": "Earth Interactions",
-        "short_name": "EINT",
-        "cmap": "tab20b",
-        "rss": "https://journals.ametsoc.org/action/showFeed?type=etoc&feed=rss&jc=eint"
-    },
-    {
         "name": "Advances in Meteorology",
         "short_name": "AM",
         "cmap": "winter",
@@ -105,7 +99,13 @@
         "name": "Bulletin of the American Meteorological Society",
         "short_name": "BAMS",
         "cmap": "copper",
-        "rss": "http://journals.ametsoc.org/action/showFeed?type=etoc&feed=rss&jc=bams"
+        "rss": "https://journals.ametsoc.org/journalissuetocrss/journals/bams/bams-overview.xml"
+    },
+    {
+        "name": "Earth Interactions",
+        "short_name": "EINT",
+        "cmap": "tab20b",
+        "rss": "https://journals.ametsoc.org/journalissuetocrss/journals/eint/eint-overview.xml"
     },
     {
         "name": "Weather and Climate Dynamics",
