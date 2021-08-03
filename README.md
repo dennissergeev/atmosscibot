@@ -1,8 +1,15 @@
-# AtmosSciBot
-
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=E4E8KQUUKR84W&source=url)
-
+<h1 align="center">
+AtmosSciBot
+</h1>
+<h4 align="center">
 Twitter bot that generates word clouds of new open access publications in atmospheric sciences.
+</h4>
+
+<p align="center">
+<a href="https://www.buymeacoffee.com/dennissergeev">
+<img src="https://img.shields.io/badge/Donate-Buy%20Me%20A%20Coffee-blue.svg?logo=buymeacoffee&logoColor=white"
+     alt="Buy my creator a coffee!"></a>
+</p>
 
 The bot parses RSS feeds of scientific journals, downloads new publications in HTML/XML and then builds a word cloud image of the extracted text.
 
