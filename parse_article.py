@@ -103,36 +103,42 @@ def text_from_soup(
         else:
             assert len(between_children) == 2
             try:
-                for i, child_descr in enumerate(between_children):
-                    if isinstance(child_descr, dict):
-                        child_tag = result[0].find_all(**child_descr)[0]
-                        between_children[i] = result[0].contents.index(child_tag)
-                children_subset = slice(*between_children)
-                text = ""
-                for child in result[0].contents[children_subset]:
-                    try:
-                        text += child.text
-                    except AttributeError:
-                        text += child.strip()
-                    except Exception:
-                        pass
+                if len(result) == 0:
+                    _children = between_children.copy()
+                    for i, child_descr in enumerate(between_children):
+                        if isinstance(child_descr, dict):
+                            child_tag = result[0].find_all(**child_descr)[0]
+                            _children[i] = result[0].contents.index(child_tag)
+                    children_subset = slice(*_children)
+                    text = ""
+                    for child in result[0].contents[children_subset]:
+                        try:
+                            text += child.text
+                        except AttributeError:
+                            text += child.strip()
+                        except Exception:
+                            pass
+                else:
+                    to_keep = False
+                    _res = []
+                    for tag in result:
+                        found = tag.find_all(**between_children[0])
+                        if (len(found) != 0) or (
+                            between_children[0].get("attrs", {}).items()
+                            <= tag.attrs.items()
+                        ):
+                            to_keep = True
+                        found = tag.find_all(**between_children[1])
+                        if (len(found) != 0) or (
+                            between_children[1].get("attrs", {}).items()
+                            <= tag.attrs.items()
+                        ):
+                            to_keep = False
+                        if to_keep:
+                            _res.append(tag)
+                    text = " ".join([i.text for i in _res])
             except IndexError:
-                to_keep = False
-                _res = []
-                for tag in result:
-                    found = tag.find_all(**between_children[0])
-                    if (len(found) != 0) or (
-                        between_children[0]["attrs"].items() <= tag.attrs.items()
-                    ):
-                        to_keep = True
-                    found = tag.find_all(**between_children[1])
-                    if (len(found) != 0) or (
-                        between_children[1]["attrs"].items() <= tag.attrs.items()
-                    ):
-                        to_keep = False
-                    if to_keep:
-                        _res.append(tag)
-                text = " ".join([i.text for i in _res])
+                text = ""
             return text
     else:
         # except urllib.request.HTTPError as e:
@@ -245,17 +251,17 @@ def extract_text(url, journal, url_ready=False):
 
     elif journal.upper() in ["BAMS", "EINT"]:
         # American Meteorological Society journals
-        new_path = parsed_link.path.replace("/abs", "/full")
-        if url_ready:
-            doc_url = parsed_link.geturl()
-        else:
-            doc_url = parsed_link._replace(path=new_path, query="").geturl()
-        # logger.info(doc_url)
+        doc_url = parsed_link.geturl()
         parser = "lxml-html"
-        find_args = dict(name="p")
-        escape_result = dict(
-            name="a", attrs={"class": "link link-ref link-reveal xref-bibr"}
-        )
+        find_args = {"name": "div", "attrs": {"id": "articleBody"}}
+        between_children = [
+            {},
+            {"name": "section", "attrs": {"class": ["refSection", "level1"]}},
+        ]
+        escape_result = [
+            {"name": "a"},
+            {"name": "ack"},
+        ]
 
     elif journal.upper() == "ATMOS":
         # MDPI Atmosphere
