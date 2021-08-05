@@ -17,7 +17,7 @@ https://twitter.com/AtmosSciBot
 
 ## On demand generation
 A word cloud can be created if AtmosSciBot is mentioned in a tweet and **a URL to the HTML or XML page of an open-access publication** is included.
-Note that the URL should directly lead to the page with the full text of the publication and **NOT** an abstract (so don't request EGU articles that are still in discussion state)!
+Note that the URL should directly lead to the HTML page (**NOT** a PDF) with the full text of the publication and **NOT** an abstract (so don't request EGU articles that are still in discussion state)!
 
 The tweet has to contain a **short name** of the corresponding journal as a **hashtag**. Only the journals that are in the [list of journals](journal_list.json) are allowed: otherwise the bot would not know how to extract the text from HTML. The tweet also has to contain the following words in any order: "make", "word", "cloud", "please".
 
