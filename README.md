@@ -6,9 +6,9 @@ Twitter bot that generates word clouds of new open access publications in atmosp
 </h4>
 
 <p align="center">
-<a href="https://www.buymeacoffee.com/dennissergeev">
-<img src="https://img.shields.io/badge/Donate-Buy%20Me%20A%20Coffee-blue.svg?logo=buymeacoffee&logoColor=white"
-     alt="Buy my creator a coffee!"></a>
+  <a href="https://www.paypal.com/paypalme/dennissergeev/5"><img src="https://img.shields.io/badge/-TIP_£5-yellow.svg"/><a/>
+  <a href="https://www.paypal.com/paypalme/dennissergeev/10"><img src="https://img.shields.io/badge/-TIP_£10-orange.svg"/><a/>
+  <a href="https://www.paypal.com/paypalme/dennissergeev/25"><img src="https://img.shields.io/badge/-TIP_£25-red.svg"/><a/>
 </p>
 
 The bot parses RSS feeds of scientific journals, downloads new publications in HTML/XML and then builds a word cloud image of the extracted text.
