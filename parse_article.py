@@ -65,8 +65,7 @@ def get_page_source(url, exec_dir):
 
 
 def text_from_soup(
-    url,
-    exec_dir,
+    content,
     parser,
     find_args,
     check_for_open_access=None,
@@ -78,10 +77,8 @@ def text_from_soup(
 
     Arguments
     ---------
-    url: str
-        URL pointing to the page
-    exec_dir: pathlib.Path
-        Directory with firefox & geckodriver
+    content: str
+        HTML or XML page source.
     parser: str
         HTML/XML parser, used by beautifulsoup
     find_args: dict
@@ -101,10 +98,7 @@ def text_from_soup(
     text: str
         Extracted text joined by whitespace
     """
-    doc = get_page_source(url, exec_dir)
-    if not doc:
-        return ""
-    soup = bs4.BeautifulSoup(doc, parser)
+    soup = bs4.BeautifulSoup(content, parser)
     if check_for_open_access is not None:
         oa_check = soup.find_all(**check_for_open_access)
         # if len(oa_check) == 0:
@@ -188,7 +182,25 @@ def text_from_soup(
 
 
 def extract_text(url, exec_dir, journal, url_ready=False):
-    """Download XML/HTML doc and parse it"""
+    """
+    Download XML/HTML doc and parse it.
+
+    Arguments
+    ---------
+    url: str
+        URL pointing to the page
+    exec_dir: str
+        Directory with firefox & geckodriver
+    journal: str
+        Journal short name (see `journal_list.json` for available journals).
+    url_ready: bool
+        If False, the `url` is modified according to journal rules.
+
+    Returns
+    -------
+    text: str
+        Extracted text.
+    """
     parsed_link = urllib.parse.urlparse(url)
 
     between_children = None
@@ -262,7 +274,7 @@ def extract_text(url, exec_dir, journal, url_ready=False):
             # because closed-access accepted issues go through
             check_for_open_access = dict(
                 name="div",
-                text=lambda x: x in ["Open Access", "Free Access"],
+                text=lambda x: x in ["Open Access", "Free Access", "Full Access"],
                 attrs={"class": "doi-access"},
             )
 
@@ -339,9 +351,11 @@ def extract_text(url, exec_dir, journal, url_ready=False):
 
     if doc_url is not None:
         try:
+            doc = get_page_source(url, exec_dir)
+            if not doc:
+                return ""
             text = text_from_soup(
-                doc_url,
-                exec_dir,
+                doc,
                 parser,
                 find_args,
                 check_for_open_access,
