@@ -85,3 +85,6 @@ class Settings(object):
 
     def get_no_magic_word_gif(self):
         return self.config[self.CONFIGS]["no_magic_word_gif"]
+
+    def get_browser_exec_dir(self):
+        return self.config[self.CONFIGS]["browser_exec_dir"]

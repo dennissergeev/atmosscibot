@@ -40,6 +40,7 @@ class AtmosSciBot(object):
         self.settings = settings
         self.BOT_NAME = self.settings.get_bot_name()
         self.curdir = curdir
+        self.browser_exec_dir = self.settings.get_browser_exec_dir()
         self.logger = logger
         self.j_list_path = os.path.join(self.curdir, self.settings.get_journal_list())
         self.db_file = self.settings.get_db_file()
@@ -252,7 +253,7 @@ class AtmosSciBot(object):
                     # URL must be correct and directly lead to
                     # webpage with text to be parsed
                     # (unlike the ones in RSS feeds)
-                    self.text = extract_text(url, j_short_name, url_ready=True)
+                    self.text = extract_text(url, self.browser_exec_dir, j_short_name, url_ready=True)
                     if len(self.text.split(" ")) >= self.minwords:
                         self.generate_wc()
                         if self.error_in_wordcloud_gen is None:

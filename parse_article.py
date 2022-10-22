@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Retrieve journal article's HTML/XML and extract the text."""
 # Standard library
+import os
 import logging
 import urllib
 
@@ -13,8 +14,59 @@ import requests
 logger = logging.getLogger(__name__)
 
 
+def get_page_source(url, exec_dir):
+    """
+    Send an HTTP request to get the HTML/XML page.
+
+    Uses requests first, but if the status code is not 200,
+    tries to use run a headless browser session using selenium.
+
+
+    Arguments
+    ---------
+    url: str
+        URL pointing to the page
+    exec_dir: str
+        Directory with firefox & geckodriver
+
+    Returns
+    -------
+    content: str
+        Page source.
+    """
+    ua = UserAgent()
+    try:
+        req = requests.get(url, headers={"User-Agent": ua.data_browsers["chrome"][2]})
+    except requests.exceptions.RequestException as e:
+        logger.info(f"Requests exception {e} when processing {url}")
+        return ""
+
+    if req.status_code == 200:
+        content = req.content
+    else:
+        try:
+            # Try Selenium instead
+            from selenium import webdriver  # noqa
+            from selenium.webdriver.firefox.options import Options  # noqa
+            from selenium.webdriver.firefox.service import Service  # noqa
+
+            options = Options()
+            options.add_argument("--headless")
+            service = Service(os.path.join(exec_dir, "geckodriver"))
+
+            dr = webdriver.Firefox(options=options, service=service)
+            dr.get(url)
+            content = dr.page_source
+            dr.quit()
+        except Exception as e:
+            logger.info(f"Selenium exception {e} when processing {url}")
+            content = ""
+    return content
+
+
 def text_from_soup(
     url,
+    exec_dir,
     parser,
     find_args,
     check_for_open_access=None,
@@ -28,6 +80,8 @@ def text_from_soup(
     ---------
     url: str
         URL pointing to the page
+    exec_dir: pathlib.Path
+        Directory with firefox & geckodriver
     parser: str
         HTML/XML parser, used by beautifulsoup
     find_args: dict
@@ -47,106 +101,93 @@ def text_from_soup(
     text: str
         Extracted text joined by whitespace
     """
-    ua = UserAgent()
-    try:
-        req = requests.get(url, headers={"User-Agent": ua.data_browsers["chrome"][2]})
-    except requests.exceptions.RequestException as e:
-        logger.debug(f"Exception {e} when processing {url}")
+    doc = get_page_source(url, exec_dir)
+    if not doc:
         return ""
-
-    if req.status_code == 200:
-        # try:
-        #     with urllib.request.urlopen(url) as req:
-        #         doc = req.read()
-        doc = req.content
-        soup = bs4.BeautifulSoup(doc, parser)
-        if check_for_open_access is not None:
-            oa_check = soup.find_all(**check_for_open_access)
-            # if len(oa_check) == 0:
-            if len(oa_check) > 0:
-                result = soup.find_all(**find_args)
-            else:
-                return ""
-        else:
+    soup = bs4.BeautifulSoup(doc, parser)
+    if check_for_open_access is not None:
+        oa_check = soup.find_all(**check_for_open_access)
+        # if len(oa_check) == 0:
+        if len(oa_check) > 0:
             result = soup.find_all(**find_args)
-
-        if escape_result is not None:
-            if isinstance(escape_result, dict):
-                escape_result = [escape_result]
-            for esc in escape_result:
-                if len(result) == 1:
-                    # if result consists of only 1 element,
-                    # loop over its children and append tags to
-                    # a new list, escaping tags specified by
-                    # escape_result dictionary
-                    _res = result[0]
-                    result = []
-                    for tag in _res:
-                        if isinstance(tag, bs4.element.Tag):
-                            if not (
-                                esc["name"] == tag.name
-                                and esc["attrs"]["class"] == tag.attrs["class"]
-                            ):
-                                result.append(tag)
-                else:
-                    # Loop over tags in the list `result` and remove
-                    # tags specified by escape_result dictionary
-                    to_remove = []
-                    for tag in result:
-                        found = tag.find_all(**esc)
-                        if len(found) != 0:
-                            to_remove.append(tag)
-                    [result.remove(i) for i in to_remove]
-
-        if between_children is None:
-            return " ".join([i.text for i in result])
         else:
-            assert len(between_children) == 2
-            try:
-                if len(result) == 0:
-                    _children = between_children.copy()
-                    for i, child_descr in enumerate(between_children):
-                        if isinstance(child_descr, dict):
-                            child_tag = result[0].find_all(**child_descr)[0]
-                            _children[i] = result[0].contents.index(child_tag)
-                    children_subset = slice(*_children)
-                    text = ""
-                    for child in result[0].contents[children_subset]:
-                        try:
-                            text += child.text
-                        except AttributeError:
-                            text += child.strip()
-                        except Exception:
-                            pass
-                else:
-                    to_keep = False
-                    _res = []
-                    for tag in result:
-                        found = tag.find_all(**between_children[0])
-                        if (len(found) != 0) or (
-                            between_children[0].get("attrs", {}).items()
-                            <= tag.attrs.items()
-                        ):
-                            to_keep = True
-                        found = tag.find_all(**between_children[1])
-                        if (len(found) != 0) or (
-                            between_children[1].get("attrs", {}).items()
-                            <= tag.attrs.items()
-                        ):
-                            to_keep = False
-                        if to_keep:
-                            _res.append(tag)
-                    text = " ".join([i.text for i in _res])
-            except IndexError:
-                text = ""
-            return text
+            return ""
     else:
-        # except urllib.request.HTTPError as e:
-        # return empty text if url is wrong
-        return ""
+        result = soup.find_all(**find_args)
+
+    if escape_result is not None:
+        if isinstance(escape_result, dict):
+            escape_result = [escape_result]
+        for esc in escape_result:
+            if len(result) == 1:
+                # if result consists of only 1 element,
+                # loop over its children and append tags to
+                # a new list, escaping tags specified by
+                # escape_result dictionary
+                _res = result[0]
+                result = []
+                for tag in _res:
+                    if isinstance(tag, bs4.element.Tag):
+                        if not (
+                            esc["name"] == tag.name
+                            and esc["attrs"]["class"] == tag.attrs["class"]
+                        ):
+                            result.append(tag)
+            else:
+                # Loop over tags in the list `result` and remove
+                # tags specified by escape_result dictionary
+                to_remove = []
+                for tag in result:
+                    found = tag.find_all(**esc)
+                    if len(found) != 0:
+                        to_remove.append(tag)
+                [result.remove(i) for i in to_remove]
+
+    if between_children is None:
+        return " ".join([i.text for i in result])
+    else:
+        assert len(between_children) == 2
+        try:
+            if len(result) == 0:
+                _children = between_children.copy()
+                for i, child_descr in enumerate(between_children):
+                    if isinstance(child_descr, dict):
+                        child_tag = result[0].find_all(**child_descr)[0]
+                        _children[i] = result[0].contents.index(child_tag)
+                children_subset = slice(*_children)
+                text = ""
+                for child in result[0].contents[children_subset]:
+                    try:
+                        text += child.text
+                    except AttributeError:
+                        text += child.strip()
+                    except Exception:
+                        pass
+            else:
+                to_keep = False
+                _res = []
+                for tag in result:
+                    found = tag.find_all(**between_children[0])
+                    if (len(found) != 0) or (
+                        between_children[0].get("attrs", {}).items()
+                        <= tag.attrs.items()
+                    ):
+                        to_keep = True
+                    found = tag.find_all(**between_children[1])
+                    if (len(found) != 0) or (
+                        between_children[1].get("attrs", {}).items()
+                        <= tag.attrs.items()
+                    ):
+                        to_keep = False
+                    if to_keep:
+                        _res.append(tag)
+                text = " ".join([i.text for i in _res])
+        except IndexError:
+            text = ""
+        return text
 
 
-def extract_text(url, journal, url_ready=False):
+def extract_text(url, exec_dir, journal, url_ready=False):
     """Download XML/HTML doc and parse it"""
     parsed_link = urllib.parse.urlparse(url)
 
@@ -297,14 +338,25 @@ def extract_text(url, journal, url_ready=False):
         doc_url = None
 
     if doc_url is not None:
-        text = text_from_soup(
-            doc_url,
-            parser,
-            find_args,
-            check_for_open_access,
-            between_children=between_children,
-            escape_result=escape_result,
-        )
+        try:
+            text = text_from_soup(
+                doc_url,
+                exec_dir,
+                parser,
+                find_args,
+                check_for_open_access,
+                between_children=between_children,
+                escape_result=escape_result,
+            )
+        except Exception as e:
+            err_msg = f"Exception {e} when processing {doc_url} with the following arguments:"
+            err_msg += f"\n{parser=}"
+            err_msg += f"\n{find_args=}"
+            err_msg += f"\n{check_for_open_access=}"
+            err_msg += f"\n{between_children=}"
+            err_msg += f"\n{escape_result=}"
+            logger.debug(err_msg)
+            return ""
     else:
         text = ""
 
