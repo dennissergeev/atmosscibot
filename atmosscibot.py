@@ -90,7 +90,7 @@ class AtmosSciBot(object):
         self.img_file = os.path.join(output_dir, self.temp_file.format(datetime=tstamp))
 
     def get_exclude_words(self):
-        """ list of words to exclude """
+        """list of words to exclude"""
         exclude_words = list(STOPWORDS)
         stopword_files = glob(os.path.join(self.curdir, self.stopwords_dir, "*.txt"))
         for fname in stopword_files:
@@ -172,7 +172,7 @@ class AtmosSciBot(object):
         if err_msg is None:
             reply = f"@{user_name} here is a word cloud for this article {url}"
         else:
-            reply = f"Sorry @{user_name}! I am unable to create a word cloud. {err_msg}"
+            reply = f"@{user_name} Unfortunately I can't create a word cloud. {err_msg}"
         return reply
 
     def check_new_mention(self, mention):
@@ -186,7 +186,7 @@ class AtmosSciBot(object):
         self.mentions_db.insert(new_mention)
 
     def get_new_mentions(self, last_mention_id=1):
-        """ Download the new mentions """
+        """Download the new mentions"""
         mentions = self.twitter_api.twitter_api.mentions_timeline(last_mention_id)
         return mentions
 
@@ -241,7 +241,7 @@ class AtmosSciBot(object):
                     reply = self.make_reply(user_name, short_url, err_msg)
                     no_error = False
                 if j_short_name not in [i["short_name"] for i in self.j_list]:
-                    err_msg = "Sorry, requested journal is not on the journal list."
+                    err_msg = "Sorry, the requested journal is not on the journal list."
                     reply = self.make_reply(user_name, short_url, err_msg)
                     no_error = False
                 if no_error:
@@ -253,7 +253,9 @@ class AtmosSciBot(object):
                     # URL must be correct and directly lead to
                     # webpage with text to be parsed
                     # (unlike the ones in RSS feeds)
-                    self.text = extract_text(url, self.browser_exec_dir, j_short_name, url_ready=True)
+                    self.text = extract_text(
+                        url, self.browser_exec_dir, j_short_name, url_ready=True
+                    )
                     if len(self.text.split(" ")) >= self.minwords:
                         self.generate_wc()
                         if self.error_in_wordcloud_gen is None:
@@ -262,10 +264,10 @@ class AtmosSciBot(object):
                             kw["imgname"] = self.img_file
                         else:
                             # TODO: specify the problem
-                            err_msg = "Check your request or the URL"
+                            err_msg = "Please check your request or the URL"
                             reply = self.make_reply(user_name, short_url, err_msg)
                     else:
-                        err_msg = "Something went wrong: not enough text (<100 words retrieved)"
+                        err_msg = "Something went wrong or there is not enough text (<100 words)"
                         reply = self.make_reply(user_name, short_url, err_msg)
                 self.twitter_api.post_tweet(reply, short_url, **kw)
 
@@ -309,13 +311,19 @@ class AtmosSciBot(object):
 
                 if new_entry:
                     self.logger.info(f"({j_short_name}) New entry in: {url}")
-                    self.text = extract_text(url, j_short_name, url_ready=False)
+                    self.text = extract_text(
+                        url, self.browser_exec_dir, j_short_name, url_ready=False
+                    )
 
                     if len(self.text) > self.minwords:
                         self.generate_wc()
                         if self.error_in_wordcloud_gen is None:
                             imgname = self.img_file
-                            ttl = self.make_title(url, j_short_name, entry.title,)
+                            ttl = self.make_title(
+                                url,
+                                j_short_name,
+                                entry.title,
+                            )
                             short_url = self.url_shortener.shorten(url)
                             self.twitter_api.post_tweet(ttl, short_url, imgname)
                             self.write_entry(url, j_short_name, status=SUCCESS)
