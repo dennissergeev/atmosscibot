@@ -46,6 +46,7 @@ def get_page_source(url, exec_dir):
     else:
         try:
             # Try Selenium instead
+            logger.info("Using Selenium")
             from selenium import webdriver  # noqa
             from selenium.webdriver.firefox.options import Options  # noqa
             from selenium.webdriver.firefox.service import Service  # noqa

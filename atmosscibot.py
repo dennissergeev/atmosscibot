@@ -301,7 +301,7 @@ class AtmosSciBot(object):
                 # if j_short_name in ['ACP', 'AMT', 'GMD']:
                 # Check if the article is in the preprint stage
                 try:
-                    ispp = "Preprint  under review" in entry.summary_detail.value
+                    ispp = "Preprint under review" in entry.summary_detail.value
                 except AttributeError:
                     ispp = False
 
@@ -359,10 +359,10 @@ if __name__ == "__main__":
 
     # create logger
     logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.NOTSET)
     # create file handler which logs even debug messages
     fh = logging.FileHandler(log_file)
-    fh.setLevel(logging.DEBUG)
+    fh.setLevel(logging.NOTSET)
     # create formatter and add it to the handler
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(message)s")
     fh.setFormatter(formatter)
