@@ -2,6 +2,7 @@ al
 cdot
 chapter
 dash
+doi
 emsp
 ensp
 eq
@@ -10,11 +11,14 @@ fig
 figure
 frac
 hbox
+http
+https
 mathrm
 mdash
 minus
 middot
 ndash
+org
 page
 plot
 plus
