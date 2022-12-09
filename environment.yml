@@ -2,8 +2,9 @@ name: atmosscibot
 channels:
    - conda-forge 
 dependencies:
-   - python=3.9
+   - python=3.10
    - beautifulsoup4
+   - fake-useragent
    - feedparser
    - lxml
    - matplotlib
@@ -12,8 +13,7 @@ dependencies:
    - pip
    - requests
    - tinydb
+   - tweepy=<4.0
    - wordcloud
    - pip:
-       - fake_useragent
-       - tweepy
        - git+https://github.com/bitly/bitly-api-python
