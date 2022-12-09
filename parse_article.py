@@ -7,11 +7,14 @@ import urllib
 
 # External libraries
 import bs4
-from fake_useragent import UserAgent
+# from fake_useragent import UserAgent
+# from fake_useragent.errors import FakeUserAgentError
 import requests
 
 
 logger = logging.getLogger(__name__)
+default_ua = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)"
+              " Chrome/107.0.0.0 Safari/537.36")
 
 
 def get_page_source(url, exec_dir):
@@ -34,9 +37,14 @@ def get_page_source(url, exec_dir):
     content: str
         Page source.
     """
-    ua = UserAgent()
+    # try:
+    #     ua = UserAgent()
+    #     headers = {"User-Agent": ua.data_browsers["chrome"][2]}
+    # except FakeUserAgentError:
+    #     headers = {"User-Agent": default_ua}
+    headers = {"User-Agent": default_ua}
     try:
-        req = requests.get(url, headers={"User-Agent": ua.data_browsers["chrome"][2]})
+        req = requests.get(url, headers=headers)
     except requests.exceptions.RequestException as e:
         logger.info(f"Requests exception {e} when processing {url}")
         return ""

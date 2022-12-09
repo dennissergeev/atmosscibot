@@ -359,10 +359,10 @@ if __name__ == "__main__":
 
     # create logger
     logger = logging.getLogger(__name__)
-    logger.setLevel(logging.NOTSET)
+    logger.setLevel(logging.INFO)
     # create file handler which logs even debug messages
     fh = logging.FileHandler(log_file)
-    fh.setLevel(logging.NOTSET)
+    fh.setLevel(logging.DEBUG)
     # create formatter and add it to the handler
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(message)s")
     fh.setFormatter(formatter)
