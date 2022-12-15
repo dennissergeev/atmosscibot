@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 """atmosscibot URL shortener interface."""
+import logging
+
+
 IMPLEMENTED = ["bitly"]
+logger = logging.getLogger(__name__)
 
 
 class UrlShortener(object):
@@ -15,5 +19,10 @@ class UrlShortener(object):
     def shorten(self, url):
         """Shorten url."""
         # TODO: generalise the call
-        short = self.api.shorten(url)["url"]
+        try:
+            short = self.api.shorten(url)["url"]
+        except Exception as e:
+            logger.info(f"Encountered {e} for {url=}")
+            logger.info(f"Proceeding with the original URL (len={len(url)})")
+            short = url
         return short
