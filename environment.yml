@@ -6,12 +6,15 @@ dependencies:
    - beautifulsoup4
    - fake-useragent
    - feedparser
+   - geckodriver
+   - ipython
    - lxml
    - matplotlib
    - numpy
    - pillow
    - pip
    - requests
+   - selenium
    - tinydb
    - tweepy=<4.0
    - wordcloud
