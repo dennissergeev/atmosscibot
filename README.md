@@ -15,7 +15,8 @@ The bot parses RSS feeds of scientific journals, downloads new publications in H
 
 https://twitter.com/AtmosSciBot
 
-## On demand generation
+## On demand generation (Currently disabled, sorry!)
+
 A word cloud can be created if AtmosSciBot is mentioned in a tweet and **a URL to the HTML or XML page of an open-access publication** is included.
 Note that the URL should directly lead to the HTML page (**NOT** a PDF) with the full text of the publication and **NOT** an abstract (so don't request EGU articles that are still in discussion state)!
 
