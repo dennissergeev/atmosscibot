@@ -15,6 +15,9 @@ class Settings(object):
         self.URLSHORT = "urlshort"
         self.CONFIGS = "configs"
 
+    def get_twitter_bearer_token(self):
+        return self.config[self.TWITTER]["bearer_token"]
+
     def get_twitter_api_key(self):
         return self.config[self.TWITTER]["api_key"]
 

@@ -16,7 +16,7 @@ dependencies:
    - requests
    - selenium
    - tinydb
-   - tweepy=<4.0
+   - tweepy=>4.0
    - wordcloud
    - pip:
        - git+https://github.com/bitly/bitly-api-python

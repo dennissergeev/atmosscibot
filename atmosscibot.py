@@ -11,8 +11,9 @@ import logging
 import json
 from glob import glob
 import os
-from random import choice
+from random import choice, randint
 import re
+import time
 
 # External packages
 import feedparser as fp
@@ -275,7 +276,7 @@ class AtmosSciBot(object):
         with open(self.j_list_path) as json_file:
             self.j_list = json.load(json_file)
 
-        self.handle_mentions()
+        # self.handle_mentions()
 
         self.DB = TinyDB(os.path.join(curdir, self.db_file))
 
@@ -286,6 +287,10 @@ class AtmosSciBot(object):
             self.logger.info(f"({j_short_name}) Parsed RSS of {journ['name']}")
 
             for i, entry in enumerate(f.entries):
+                
+                # Sleep for a few seconds to avoid too many requests errors
+                time.sleep(randint(1, 11))
+                
                 try:
                     url = entry.link
                 except AttributeError:
@@ -370,6 +375,7 @@ if __name__ == "__main__":
     logger.addHandler(fh)
 
     twitter_api = TwitterApi(
+        s.get_twitter_bearer_token(),
         s.get_twitter_api_key(),
         s.get_twitter_api_secret(),
         s.get_twitter_access_token(),

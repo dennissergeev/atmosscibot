@@ -9,14 +9,39 @@ logger = logging.getLogger(__name__)
 
 
 class TwitterApi(object):
-    def __init__(self, api_key, api_secret, access_token, access_token_secret):
-        # Authorise twitter access
-        auth = tweepy.OAuthHandler(api_key, api_secret)
-        auth.set_access_token(access_token, access_token_secret)
-        # Initialise twitter api
-        self.twitter_api = tweepy.API(auth)
+    def __init__(self, bearer_token, api_key, api_secret, access_token, access_token_secret):
+        self.bearer_token = bearer_token  # not used; possibly needed for higher access??
+        self.api_key = api_key
+        self.api_secret = api_secret
+        self.access_token = access_token
+        self.access_token_secret = access_token_secret
+        
+        # Need 2 clients because of the new rules about posting media
+        # https://stackoverflow.com/a/76542868/5365232
+        self.client_v1 = self.get_twitter_api_v1()
+        self.client_v2 = self.get_twitter_api_v2()
+        
         # In case of error, try again one more time after n seconds
-        self.wait_seconds = 60
+        self.wait_seconds = 30
+        
+    def get_twitter_api_v1(self) -> tweepy.API:
+        """Get twitter API 1.1"""
+        auth = tweepy.OAuth1UserHandler(self.api_key, self.api_secret)
+        auth.set_access_token(
+            self.access_token,
+            self.access_token_secret,
+        )
+        return tweepy.API(auth)
+
+    def get_twitter_api_v2(self) -> tweepy.Client:
+        """Get twitter API 2.0"""
+        client = tweepy.Client(
+            consumer_key=self.api_key,
+            consumer_secret=self.api_secret,
+            access_token=self.access_token,
+            access_token_secret=self.access_token_secret,
+        )
+        return client
 
     def assemble_tweet_text(self, tweet_text, short_url, text_len=225):
         """Assemble tweet status"""
@@ -32,25 +57,27 @@ class TwitterApi(object):
         tweet_text = tweet_text[:text_len] + ellipsis + short_url
         return tweet_text
 
-    def post_tweet(self, tweet_text, short_url, imgname=None, in_reply_to_status_id=None):
+    def post_tweet(self, tweet_text, short_url, imgname=None, in_reply_to_tweet_id=None):
         """Update status with a wordcloud image"""
-        if in_reply_to_status_id is None:
+        if in_reply_to_tweet_id is None:
             tweet_text = self.assemble_tweet_text(tweet_text, short_url)
-            kwargs = dict(status=tweet_text)
+            kwargs = dict(text=tweet_text)
         else:
-            kwargs = dict(status=tweet_text, in_reply_to_status_id=in_reply_to_status_id)
+            kwargs = dict(text=tweet_text, in_reply_to_tweet_id=in_reply_to_tweet_id)
 
         try:
             if imgname is not None:
                 # Tweet text and image
                 try:
-                    self.twitter_api.update_with_media(imgname, **kwargs)
-                except tweepy.TweepError as e:
+                    media = self.client_v1.media_upload(filename=imgname)
+                    self.client_v2.create_tweet(media_ids=[media.media_id], **kwargs)
+                except tweepy.errors.TweepyException as e:
                     logger.debug(f"Encountered {e}, retrying after {self.wait_seconds} s")
                     time.sleep(self.wait_seconds)
-                    self.twitter_api.update_with_media(imgname, **kwargs)
+                    media = self.client_v1.media_upload(filename=imgname)
+                    self.client_v2.create_tweet(media_ids=[media.media_id], **kwargs)
             else:
                 # post tweet without a wordcloud
-                self.twitter_api.update_status(**kwargs)
-        except tweepy.TweepError as e:
+                self.client_v2.create_tweet(**kwargs)
+        except tweepy.errors.TweepyException as e:
             logger.debug(f"Encountered {e}. kwargs={kwargs}; image={imgname}")
