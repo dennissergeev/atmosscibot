@@ -7,7 +7,6 @@ This bot creates word clouds from scientific articles and posts them to Twitter.
 """
 # Standard library
 from datetime import datetime
-import logging
 import json
 from glob import glob
 import os
@@ -24,6 +23,7 @@ from wordcloud import WordCloud, STOPWORDS
 
 # Local modules
 from font_manager import get_font
+from logger import logger
 from parse_article import extract_text
 from settings import Settings
 from shorten_url_api import UrlShortener
@@ -37,12 +37,11 @@ NO_TEXT = 1  # mostly because it's not open access
 class AtmosSciBot(object):
     """Main class for running atmosscibot."""
 
-    def __init__(self, curdir, settings, twitter_api, url_shortener, logger):
+    def __init__(self, curdir, settings, twitter_api, url_shortener):
         self.settings = settings
         self.BOT_NAME = self.settings.get_bot_name()
         self.curdir = curdir
         self.browser_exec_dir = self.settings.get_browser_exec_dir()
-        self.logger = logger
         self.j_list_path = os.path.join(self.curdir, self.settings.get_journal_list())
         self.db_file = self.settings.get_db_file()
 
@@ -212,14 +211,14 @@ class AtmosSciBot(object):
             # may be redundant...
             new_mention = self.check_new_mention(mention)
             if new_mention:
-                self.logger.info(
+                logger.info(
                     f"Handling mention from @{mention.user.screen_name}, with id={mention.id_str}"
                 )
                 self.save_mention(mention)
 
                 user_name = mention.user.screen_name
                 if user_name == self.BOT_NAME:
-                    self.logger.info("Skipping this self mention")
+                    logger.info("Skipping this self mention")
                     continue
 
                 kw = dict(imgname=None, in_reply_to_status_id=mention.id_str)
@@ -284,17 +283,15 @@ class AtmosSciBot(object):
             f = fp.parse(journ["rss"])
             j_short_name = journ["short_name"]
             self.cmap = journ["cmap"]
-            self.logger.info(f"({j_short_name}) Parsed RSS of {journ['name']}")
+            logger.info(f"({j_short_name}) Parsed RSS of {journ['name']}")
 
             for i, entry in enumerate(f.entries):
-                
                 # Sleep for a few seconds to avoid too many requests errors
                 time.sleep(randint(1, 11))
-                
                 try:
                     url = entry.link
                 except AttributeError:
-                    self.logger.error(f"No `link` attribute in entry={entry}")
+                    logger.error(f"No `link` attribute in entry={entry}")
                     continue
                 if (j_short_name == "ASL") and ("author" in entry):
                     # Skip "Issue information"
@@ -315,7 +312,7 @@ class AtmosSciBot(object):
                     new_entry = False
 
                 if new_entry:
-                    self.logger.info(f"({j_short_name}) New entry in: {url}")
+                    logger.info(f"({j_short_name}) New entry in: {url}")
                     self.text = extract_text(
                         url, self.browser_exec_dir, j_short_name, url_ready=False
                     )
@@ -334,13 +331,13 @@ class AtmosSciBot(object):
                             self.write_entry(url, j_short_name, status=SUCCESS)
                             # time.sleep(10)
                         else:
-                            self.logger.warning(
+                            logger.warning(
                                 f"({j_short_name}) Error in word cloud generation:"
                                 f" {self.error_in_wordcloud_gen}"
                             )
                     else:
                         imgname = None
-                        self.logger.warning(
+                        logger.warning(
                             f"({j_short_name}) Text length {len(self.text)}"
                             f" is less than {self.minwords}"
                         )
@@ -353,26 +350,6 @@ if __name__ == "__main__":
     curdir = os.path.dirname(os.path.realpath(__file__))
     # Read settings
     s = Settings(os.path.join(curdir, "settings.ini"))
-    #
-    # Set up logging
-    #
-    log_dir = os.path.join(curdir, s.get_log_dirname())
-    if not os.path.isdir(log_dir):
-        os.mkdir(log_dir)
-    tstamp = datetime.utcnow().strftime("%Y%m%d")
-    log_file = os.path.join(log_dir, s.get_log_filename().format(datetime=tstamp))
-
-    # create logger
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.INFO)
-    # create file handler which logs even debug messages
-    fh = logging.FileHandler(log_file)
-    fh.setLevel(logging.DEBUG)
-    # create formatter and add it to the handler
-    formatter = logging.Formatter("%(asctime)s - %(name)s - %(message)s")
-    fh.setFormatter(formatter)
-    # add the handlers to the logger
-    logger.addHandler(fh)
 
     twitter_api = TwitterApi(
         s.get_twitter_bearer_token(),
@@ -387,7 +364,7 @@ if __name__ == "__main__":
         api_key=s.get_url_shortener_key(),
     )
     logger.info("Initialised")
-    bot = AtmosSciBot(curdir, s, twitter_api, url_shortener, logger)
+    bot = AtmosSciBot(curdir, s, twitter_api, url_shortener)
     logger.info("Run started")
     bot.run()
     logger.info("Run finished")

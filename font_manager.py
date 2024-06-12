@@ -2,15 +2,16 @@
 # -*- coding: utf-8 -*-
 """Get font for wordcloud."""
 from glob import glob
-import logging
 import os
 import subprocess as sb
+
+# Local modules
+from logger import logger
 
 DEFAULT_FONT_PATH = "fonts/Chicle/Chicle-Regular.ttf"
 GOOGLEFONT_DOWNLOAD_SCRIPT = "../google-font-download/google-font-download"
 ALL_EXTENSIONS = ["woff2", "woff", "eot", "svg", "ttf"]
 FONT_EXTENSIONS = ["otf", "ttf"]
-logger = logging.getLogger(__name__)
 
 
 def get_font(font_name):
@@ -18,7 +19,7 @@ def get_font(font_name):
     curdir = os.path.dirname(os.path.realpath(__file__))
     default = os.path.join(curdir, DEFAULT_FONT_PATH)
     if font_name is None:
-        logger.info(f"Using default font")
+        logger.info("Using default font")
         return default
     try:
         script = os.path.join(curdir, GOOGLEFONT_DOWNLOAD_SCRIPT)

@@ -1,29 +1,38 @@
 # -*- coding: utf-8 -*-
 """Twitter API class for atmosscibot."""
-import logging
 import time
 import tweepy
 
-
-logger = logging.getLogger(__name__)
+# Local modules
+from logger import logger
 
 
 class TwitterApi(object):
-    def __init__(self, bearer_token, api_key, api_secret, access_token, access_token_secret):
-        self.bearer_token = bearer_token  # not used; possibly needed for higher access??
+    def __init__(
+        self,
+        bearer_token,
+        api_key,
+        api_secret,
+        access_token,
+        access_token_secret,
+        retry_seconds=5,
+    ):
+        self.bearer_token = (
+            bearer_token  # not used; possibly needed for higher access??
+        )
         self.api_key = api_key
         self.api_secret = api_secret
         self.access_token = access_token
         self.access_token_secret = access_token_secret
-        
+
         # Need 2 clients because of the new rules about posting media
         # https://stackoverflow.com/a/76542868/5365232
         self.client_v1 = self.get_twitter_api_v1()
         self.client_v2 = self.get_twitter_api_v2()
-        
+
         # In case of error, try again one more time after n seconds
-        self.wait_seconds = 30
-        
+        self.retry_seconds = retry_seconds
+
     def get_twitter_api_v1(self) -> tweepy.API:
         """Get twitter API 1.1"""
         auth = tweepy.OAuth1UserHandler(self.api_key, self.api_secret)
@@ -57,7 +66,9 @@ class TwitterApi(object):
         tweet_text = tweet_text[:text_len] + ellipsis + short_url
         return tweet_text
 
-    def post_tweet(self, tweet_text, short_url, imgname=None, in_reply_to_tweet_id=None):
+    def post_tweet(
+        self, tweet_text, short_url, imgname=None, in_reply_to_tweet_id=None
+    ):
         """Update status with a wordcloud image"""
         if in_reply_to_tweet_id is None:
             tweet_text = self.assemble_tweet_text(tweet_text, short_url)
@@ -72,12 +83,14 @@ class TwitterApi(object):
                     media = self.client_v1.media_upload(filename=imgname)
                     self.client_v2.create_tweet(media_ids=[media.media_id], **kwargs)
                 except tweepy.errors.TweepyException as e:
-                    logger.debug(f"Encountered {e}, retrying after {self.wait_seconds} s")
-                    time.sleep(self.wait_seconds)
+                    logger.info(
+                        f"Encountered {e}, retrying after {self.retry_seconds} s"
+                    )
+                    time.sleep(self.retry_seconds)
                     media = self.client_v1.media_upload(filename=imgname)
                     self.client_v2.create_tweet(media_ids=[media.media_id], **kwargs)
             else:
                 # post tweet without a wordcloud
                 self.client_v2.create_tweet(**kwargs)
-        except tweepy.errors.TweepyException as e:
-            logger.debug(f"Encountered {e}. kwargs={kwargs}; image={imgname}")
+        except Exception as e:
+            logger.info(f"Encountered {e}. kwargs={kwargs}; image={imgname}")

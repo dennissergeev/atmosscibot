@@ -2,7 +2,6 @@
 """Retrieve journal article's HTML/XML and extract the text."""
 # Standard library
 import os
-import logging
 import urllib
 
 # External libraries
@@ -11,8 +10,10 @@ import bs4
 # from fake_useragent.errors import FakeUserAgentError
 import requests
 
+# Local modules
+from logger import logger
 
-logger = logging.getLogger(__name__)
+
 default_ua = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)"
               " Chrome/107.0.0.0 Safari/537.36")
 

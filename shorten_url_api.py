@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 """atmosscibot URL shortener interface."""
-import logging
-
+# Local modules
+from logger import logger
 
 IMPLEMENTED = ["bitly"]
-logger = logging.getLogger(__name__)
 
 
 class UrlShortener(object):
