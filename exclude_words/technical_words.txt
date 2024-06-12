@@ -15,6 +15,7 @@ hbox
 http
 https
 mathrm
+mathbf
 mdash
 minus
 middot
