@@ -15,7 +15,10 @@ The bot parses RSS feeds of scientific journals, downloads new publications in H
 
 https://twitter.com/AtmosSciBot
 
-## On demand generation (Currently disabled, sorry!)
+## On demand generation
+
+<details>
+<summary>(Currently disabled, sorry!)</summary>
 
 A word cloud can be created if AtmosSciBot is mentioned in a tweet and **a URL to the HTML or XML page of an open-access publication** is included.
 Note that the URL should directly lead to the HTML page (**NOT** a PDF) with the full text of the publication and **NOT** an abstract (so don't request EGU articles that are still in discussion state)!
@@ -45,6 +48,7 @@ or (note the spaces)
 ```
 If something is wrong with the font-related request, the wordcloud is created using the default font (https://fonts.google.com/specimen/Chicle).
 
+</details>
 
 ## Repo contents
 * [Settings](settings-example.ini)
