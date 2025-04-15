@@ -5,12 +5,6 @@ AtmosSciBot
 Twitter bot that generates word clouds of new open access publications in atmospheric sciences.
 </h4>
 
-<p align="center">
-  <a href="https://www.paypal.com/paypalme/dennissergeev/5"><img src="https://img.shields.io/badge/-TIP_£5-yellow.svg"/><a/>
-  <a href="https://www.paypal.com/paypalme/dennissergeev/10"><img src="https://img.shields.io/badge/-TIP_£10-orange.svg"/><a/>
-  <a href="https://www.paypal.com/paypalme/dennissergeev/25"><img src="https://img.shields.io/badge/-TIP_£25-red.svg"/><a/>
-</p>
-
 The bot parses RSS feeds of scientific journals, downloads new publications in HTML/XML and then builds a word cloud image of the extracted text.
 
 https://twitter.com/AtmosSciBot
